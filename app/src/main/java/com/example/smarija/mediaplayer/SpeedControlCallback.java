@@ -41,7 +41,7 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
                 frameDelta = presentationTimeUsec - mPrevPresentUsec;
             }
             if (frameDelta < 0) {
-                Log.w(TAG, "Weird, video times went backward");
+                //Log.w(TAG, "Weird, video times went backward");
                 frameDelta = 0;
             } else if (frameDelta == 0) {
                 // This suggests a possible bug in movie generation.

@@ -2,127 +2,121 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#080808"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-
+    android:id="@+id/mainlayout"
 
     tools:context="com.example.smarija.mediaplayer.MainActivity"
     android:weightSum="1">
 
-
-    <!--<fragment-->
-    <!--android:layout_marginTop="10dp"-->
-    <!--android:layout_marginLeft="15dp"-->
-    <!--android:layout_marginRight="15dp"-->
-    <!--android:layout_marginBottom="10dp"-->
-    <!--android:id="@+id/fragment_container"-->
-    <!--android:name="com.example.grkavac.updated_player.Codec"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="311dp"-->
-
-    <!--android:layout_weight="0.95" />-->
-
-
-    <TextureView
-        android:id="@+id/movie_texture_view"
-        android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="10dp"
-        android:layout_height="400dp" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:background="#c9c7c5"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
-
-            android:onClick="clickPlayStop"/>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
-
-            android:onClick="pause"/>
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
-
-            android:onClick="stopPlayback"/>
-
-        <Button
-            android:id="@+id/button6"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
-
-            android:onClick="rewind"/>
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
 
 
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
+        <TextureView
+            android:id="@+id/movie_texture_view"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="0dp"
+            android:layout_weight="1 "/>
 
-            android:onClick="fastForward"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <LinearLayout
+            android:id="@+id/one"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="#ffffff"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/play_selector"
+                android:onClick="clickPlay"/>
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/pause_selector"
+                android:layout_marginLeft="15dp"
+
+                android:onClick="pause"/>
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/stop_selector"
+                android:layout_marginLeft="15dp"
+                android:onClick="stopPlayback"/>
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/rewind_selector"
+                android:onClick="rewind"/>
 
 
-        <Button
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="15dp"
-            android:id="@+id/browse"
-            android:text="Browse" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/browse"
-            android:layout_marginTop="20dp"
-            android:id="@+id/selected"
-            android:textStyle="bold"
-            android:textColor="#4189E1"
-            android:textSize="20sp"
-            android:text="Selected file" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/selected"
-            android:layout_marginTop="20dp"
-            android:id="@+id/file_path"
-            android:text="No file has been selected"
-            android:textSize="18sp" />
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/ff_selector"
+                android:onClick="fastForward"/>
 
 
+            <Button
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="630dp"
+                android:id="@+id/browse"
+                android:background="@drawable/browse_selector"
+                 />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="15dp"
+                android:layout_below="@+id/browse"
+                android:layout_marginTop="0dp"
+                android:id="@+id/selected"
+                android:textStyle="bold"
+                android:textColor="#4189E1"
+                android:textSize="20sp"
+                android:text="Selected file" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_below="@+id/selected"
+                android:id="@+id/file_path"
+                android:text="No file has been selected"
+                android:textSize="18sp" />
+
+
+
+        </LinearLayout>
 
     </LinearLayout>
-
-
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" />
 </LinearLayout>

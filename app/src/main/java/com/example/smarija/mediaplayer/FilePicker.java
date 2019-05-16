@@ -10,7 +10,6 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +18,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.smarija.mediaplayer.R;
 
 public class FilePicker extends ListActivity {
 
     public final static String EXTRA_FILE_PATH = "file_path";
     public final static String EXTRA_SHOW_HIDDEN_FILES = "show_hidden_files";
-    public final static String EXTRA_ACCEPTED_FILE_EXTENSIONS = "mp4";
-    private final static String DEFAULT_INITIAL_DIRECTORY = "/sdcard";
+    public final static String EXTRA_ACCEPTED_FILE_EXTENSIONS = "*";
+    private final static String DEFAULT_INITIAL_DIRECTORY = "/mnt/sdcard/Download";
 
     protected File Directory;
     protected ArrayList<File> Files;
@@ -41,9 +39,6 @@ public class FilePicker extends ListActivity {
         LayoutInflater inflator = (LayoutInflater)
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View emptyView = inflator.inflate(R.layout.empty_view, null);
-        ((ViewGroup) getListView().getParent()).addView(emptyView);
-        getListView().setEmptyView(emptyView);
 
         // Set initial directory
         Directory = new File(DEFAULT_INITIAL_DIRECTORY);

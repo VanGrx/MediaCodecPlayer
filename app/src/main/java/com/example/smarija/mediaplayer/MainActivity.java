@@ -1,122 +1,33 @@
 package com.example.smarija.mediaplayer;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.smarija.mediaplayer.Codec;
 
 import java.io.File;
 import java.io.IOException;
-//
-//
-//
-//public class MainActivity extends AppCompatActivity{
-//
-//    Codec c;
-//    Audio a;
-//    ProgressBar pb;
-//    ProgressBarThread pbt;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        c = (Codec) getFragmentManager().findFragmentById(R.id.fragment_container);
-//
-//        pb = (ProgressBar) findViewById(R.id.progressBar);
-//
-//        final Button play_but = (Button) findViewById(R.id.button1);
-//        a = new Audio();
-//        a.fis=this.getResources().openRawResource(R.raw.test);
-//        a.sampleFD = getResources().openRawResourceFd(R.raw.big_buck_bunny);
-//        play_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-////                a.start();
-////                pbt= new ProgressBarThread(pb,c);
-////                pbt.start();
-//                c.play();
-//            }
-//        });
-//
-//        Button pause_but = (Button) findViewById(R.id.button2);
-//        pause_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                c.pause();
-//            }
-//        });
-//
-//        Button stop_but = (Button) findViewById(R.id.button3);
-//        stop_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                c.stop();
-//            }
-//        });
-//
-//        Button ff_but = (Button) findViewById(R.id.button4);
-//        ff_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                c.ff();
-//            }
-//        });
-//
-//        Button fr_but = (Button) findViewById(R.id.button6);
-//        fr_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                c.fr();
-//            }
-//        });
-//
-//        Button open_but = (Button) findViewById(R.id.button5);
-//        open_but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //openFile();
-//            }
-//        });
-//
-//
-//    }
-//
-//    @Override
-//    protected void onStart(){
-//
-//        super.onStart();
-//
-//
-//    }
-//
-//    @Override
-//    public void onBackPressed()
-//    {
-//        a.exit();
-//        finish();
-//    }
-//
-//
-//}
+
 
 public class MainActivity extends Activity implements OnItemSelectedListener, View.OnClickListener,
         TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
@@ -127,28 +38,27 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
     private boolean mShowStopLabel;
     private MoviePlayer.PlayTask mPlayTask;
     private boolean mSurfaceTextureReady = false;
-
+    public MediaFormat ff;
     SpeedControlCallback callback;
 
     ProgressBar pb;
     ProgressBarThread pbt;
     MoviePlayer player = null;
-    Audio a;
-    Codec c;
+    //Audio a;
     Surface surface;
 
     public boolean inited = false;
+    public boolean stop_ff = false;
 
-    int sat =0;
 
-
-    private final Object mStopper = new Object();
 
     //za otvaranje iz fajla:
     private static final int REQUEST_PICK_FILE = 1;
     private TextView filePath;
     private Button Browse;
     private File selectedFile;
+
+    private boolean show = false;
 
 
     @Override
@@ -159,22 +69,43 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
         mTextureView = (TextureView) findViewById(R.id.movie_texture_view);
         mTextureView.setSurfaceTextureListener(this);
 
-
-
         pb = (ProgressBar) findViewById(R.id.progressBar);
+        pb.setBackgroundColor(Color.WHITE);
 
        filePath = (TextView) findViewById(R.id.file_path);
         Browse = (Button) findViewById(R.id.browse);
         Browse.setOnClickListener(this);
+
+        LinearLayout rlayout = (LinearLayout) findViewById(R.id.mainlayout);
+        rlayout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(show){
+                    LinearLayout one = (LinearLayout) findViewById(R.id.one);
+                    one.setVisibility(View.VISIBLE);
+                }
+            }
+
+        });
+
     }
+
 
     @Override
     public void onClick(View v) {
 
         switch (v.getId()){
             case R.id.browse:
-                Intent intent = new Intent(this, FilePicker.class);
-                startActivityForResult(intent, REQUEST_PICK_FILE);
+                if(!inited || stop_ff == true ) {
+                    Intent intent = new Intent(this, FilePicker.class);
+                    startActivityForResult(intent, REQUEST_PICK_FILE);
+                }
+                else{
+                    stopPlayback(v);
+                    Intent intent = new Intent(this, FilePicker.class);
+                    startActivityForResult(intent, REQUEST_PICK_FILE);
+                }
                 break;
         }
     }
@@ -208,7 +139,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
         super.onPause();
 
         if (mPlayTask != null) {
-            //stopPlayback();
             mPlayTask.waitForStop();
         }
     }
@@ -236,107 +166,171 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
 
     @Override public void onNothingSelected(AdapterView<?> parent) {}
 
-    public void clickPlayStop(@SuppressWarnings("unused") View unused) {
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
-        if(inited)
-            if(player.paused)
-            {
-                a.paused=false;
-                player.paused=false;
+    public void clickPlay(@SuppressWarnings("unused") View unused) {
+        LinearLayout one = (LinearLayout) findViewById(R.id.one);
+        one.setVisibility(View.INVISIBLE);
+        show = true;
+        if(inited) {
+            if (player.paused) {
+                //a.paused = false;
+                player.paused = false;
+                callback.setFixedPlaybackRate(0);
                 player.mFrameCallback.resetTime();
                 return;
-            }
-            else
-            if(player.fastForward)
-            {
+            } else if (player.fastForward) {
+                long temp = player.temp();
+                temp = (long) (temp + 500000);
+                //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
                 player.fastForward = false;
+                //a.fastforward = false;
                 player.mFrameCallback.resetTime();
                 callback.setFixedPlaybackRate(0);
                 player.mFrameCallback.resetTime();
-
                 return;
             }
-            else
-            if(player.rewind)
-            {
+            else if (player.rewind) {
+                long temp = player.temp();
+                temp = (long) (temp + 500000);
+                //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
                 player.rewind = false;
+                //a.rewind = false;
                 player.mFrameCallback.resetTime();
+                callback.setFixedPlaybackRate(0);
                 return;
-            }
-            else
+            } else
                 return;
+        }
 
-        inited = true;
-
-//        if (mShowStopLabel) {
-//            Log.d(TAG, "stopping movie");
-//            //stopPlayback();
-//
-//            mShowStopLabel = false;
-//        } else
+            inited = true;
         {
-//            if (mPlayTask != null) {
-//                Log.w(TAG, "movie already playing");
-//                return;
-//            }
-            Log.d(TAG, "starting movie");
             callback = new SpeedControlCallback();
-
             SurfaceTexture st = mTextureView.getSurfaceTexture();
             surface = new Surface(st);
-
-            //String path = "android.resource://" + getPackageName() + "/" + R.raw.big_buck_bunny;
-
             try {
+//                if(selectedFile == null)
+//                    selectedFile = new File("/sdcard/Movies/big_buck_bunny.mp4");
+                // Check if we have write permission
+                Activity activity = (Activity) MainActivity.this;
+                int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    // We don't have permission so prompt the user
+                    ActivityCompat.requestPermissions(
+                            activity,
+                            PERMISSIONS_STORAGE,
+                            REQUEST_EXTERNAL_STORAGE
+                    );
+                }
                 player = new MoviePlayer(selectedFile, surface, callback);
             } catch (IOException ioe) {
-                Log.e(TAG, "Unable to play movie", ioe);
                 surface.release();
                 return;
             }
             adjustAspectRatio(player.getVideoWidth(), player.getVideoHeight());
-
             //play video and audio
             mPlayTask = new MoviePlayer.PlayTask(player, this);
-            a = new Audio();
-            a.fis=selectedFile;
-            a.sampleFD = selectedFile;
-            a.start();
+            //a = new Audio();
+            if(selectedFile == null){
+                //a.useDescriptop = true;
+                //a.mfis=this.getResources().openRawResource(R.raw.test);
+                //a.msampleFD = getResources().openRawResourceFd(R.raw.big_buck_bunny);
+            }
+            else {
+                //a.fis = selectedFile;
+                //a.sampleFD = selectedFile;
+            }
+            //a.start();
 
             mShowStopLabel = true;
             pbt= new ProgressBarThread(pb,player);
             pbt.start();
             mPlayTask.execute();
-
-
         }
     }
 
     public void fastForward(@SuppressWarnings("unused") View unused) {
-        callback.setFixedPlaybackRate(120);
-        player.fastForward = true;
+
+        if (inited) {
+            if(player.rewind==true){
+                player.rewind=false;
+                //a.rewind = false;
+            }
+            if (player.paused) {
+                player.paused = false;
+               // a.paused = false;
+            }
+
+            callback.setFixedPlaybackRate(120);
+            player.fastForward = true;
+            //a.fastforward = true;
+        } else {
+        }
     }
 
     public void pause(@SuppressWarnings("unused") View unused) {
-        a.paused=true;
-        player.paused=true;
+        if (inited) {
+            //a.paused = true;
+            player.paused = true;
+            if (player.rewind) {
+                player.rewind = false;
+                callback.setFixedPlaybackRate(0);
+                player.mFrameCallback.resetTime();
+                return;
+            } else {
+            }
+        }
     }
 
     public void rewind(@SuppressWarnings("unused") View unused) {
+        if (inited) {
+            if(player.fastForward==true){
+                player.fastForward=false;
+                //a.fastforward = false;
+            }
+            if (player.paused) {
+                player.paused = false;
+                //a.paused = false;
+            }
+        callback.setFixedPlaybackRate(120);
         player.rewind=true;
+        //a.rewind = true;
+        }
     }
 
+
     public void stopPlayback(@SuppressWarnings("unused") View unused) {
-        if (mPlayTask != null) {
-            mPlayTask.requestStop();
-            a.requestStop();
-            pbt.requestStop();
-            a.exit();
-            surface.release();
-            mPlayTask=null;
-            player=null;
-            pbt=null;
-            inited=false;
+        if (stop_ff == true) {
+        } else
+        {
+            stop_ff = true;
+            if (mPlayTask != null ) {
+                if (player.paused) {
+                    player.paused = false;
+                    //a.paused=false;
+                    mPlayTask.requestStop();
+                    //a.requestStop();
+                    pbt.requestStop();
+                    surface.release();
+                    inited = false;
+                } else {
+                    mPlayTask.requestStop();
+                    //a.requestStop();
+                    pbt.requestStop();
+                    //a.exit();
+                    surface.release();
+                    mPlayTask = null;
+                    player = null;
+                    pbt = null;
+                    inited = false;
+                }
+            }
+            stop_ff = false;
         }
     }
 
@@ -344,7 +338,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
     public void playbackStopped() {
 
     }
-
 
     /**
      * Sets the TextureView transform to preserve the aspect ratio of the video.
@@ -378,11 +371,13 @@ public class MainActivity extends Activity implements OnItemSelectedListener, Vi
         mTextureView.setTransform(txform);
     }
 
+
     @Override
     public void onBackPressed()
     {
-        a.exit();
+        //a.exit();
         finish();
     }
+
 
 }

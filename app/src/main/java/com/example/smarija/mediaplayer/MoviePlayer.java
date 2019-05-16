@@ -1,10 +1,14 @@
 package com.example.smarija.mediaplayer;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Surface;
 
@@ -22,6 +26,9 @@ public class MoviePlayer {
 
     private volatile boolean mIsStopRequested;
 
+    public MediaExtractor extractor;
+    public MediaCodec decoder;
+
     private File mSourceFile;
     private Surface mOutputSurface;
     FrameCallback mFrameCallback;
@@ -30,10 +37,12 @@ public class MoviePlayer {
     private int mVideoHeight;
 
     private long rewind_timeout = 20000;
+    public boolean flag_stop = false;
 
     public long file_size = 0;
     public long current_size = 0;
 
+    public boolean flag_play = false;
     public boolean paused = false;
     public boolean fastForward = false;
     public boolean rewind = false;
@@ -53,17 +62,22 @@ public class MoviePlayer {
         void resetTime();
     }
 
+
     public MoviePlayer(File sourceFile, Surface outputSurface, FrameCallback frameCallback)
             throws IOException {
         mSourceFile = sourceFile;
         mOutputSurface = outputSurface;
         mFrameCallback = frameCallback;
 
-        MediaExtractor extractor = null;
+        extractor = null;
+
+
+
         try {
             extractor = new MediaExtractor();
             extractor.setDataSource(sourceFile.toString());
-            int trackIndex = selectTrack(extractor);
+            Log.e("IGOR",sourceFile.toString());
+            int trackIndex = selectTrack();
             if (trackIndex < 0) {
                 throw new RuntimeException("No video track found in " + mSourceFile);
             }
@@ -102,8 +116,9 @@ public class MoviePlayer {
     }
 
     public void play() throws IOException {
+        flag_play = true;
         MediaExtractor extractor = null;
-        MediaCodec decoder = null;
+        decoder = null;
 
         if (!mSourceFile.canRead()) {
             throw new FileNotFoundException("Unable to read " + mSourceFile);
@@ -112,7 +127,7 @@ public class MoviePlayer {
         try {
             extractor = new MediaExtractor();
             extractor.setDataSource(mSourceFile.toString());
-            int trackIndex = selectTrack(extractor);
+            int trackIndex = selectTrack();
             if (trackIndex < 0) {
                 throw new RuntimeException("No video track found in " + mSourceFile);
             }
@@ -140,15 +155,16 @@ public class MoviePlayer {
     }
 
 
-    private static int selectTrack(MediaExtractor extractor) {
+    private int selectTrack() {
         // Select the first video track we find, ignore the rest.
         int numTracks = extractor.getTrackCount();
         for (int i = 0; i < numTracks; i++) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
+            Log.e("IGOR",mime);
             if (mime.startsWith("video/")) {
                 if (VERBOSE) {
-                    Log.d(TAG, "Extractor selected track " + i + " (" + mime + "): " + format);
+                    Log.e("IGOR", "Extractor selected track " + i + " (" + mime + "): " + format);
                 }
                 return i;
             }
@@ -179,16 +195,20 @@ public class MoviePlayer {
                 }
                 continue;
             }
-            if(rewind)
-            {
-                if(rewind_timer==-1)
-                {
-                    rewind_timer=current_size;
+            if(rewind) {
+                if (!flag_stop) {
+                    if (rewind_timer == -1) {
+                        rewind_timer = current_size;
+                    }
+                    extractor.seekTo(rewind_timer - rewind_timeout, MediaExtractor.SEEK_TO_NEXT_SYNC);
+                    rewind_timer = rewind_timer - rewind_timeout;
+                    mFrameCallback.resetTime();
+                    mFrameCallback.resetTime();
                 }
-                extractor.seekTo(rewind_timer-rewind_timeout, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-                rewind_timer=rewind_timer-rewind_timeout;
-                Log.e("IGOR","VREME JE : "+rewind_timer);
-                mFrameCallback.resetTime();
+                    if ((rewind_timer - rewind_timeout) < 0) {
+                        extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+                    }
+
 
             }
             else
@@ -214,6 +234,7 @@ public class MoviePlayer {
                         // End of stream -- send empty frame with EOS flag set.
                         decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L,
                                 MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+
                         inputDone = true;
                         if (VERBOSE) Log.d(TAG, "sent input EOS");
                     } else {
@@ -221,6 +242,7 @@ public class MoviePlayer {
                             Log.w(TAG, "WEIRD: got sample from track " +
                                     extractor.getSampleTrackIndex() + ", expected " + trackIndex);
                         }
+
                         long presentationTimeUs = extractor.getSampleTime();
                         decoder.queueInputBuffer(inputBufIndex, 0, chunkSize,
                                 presentationTimeUs, 0 /*flags*/);
@@ -230,13 +252,18 @@ public class MoviePlayer {
                         }
                         inputChunk++;
                         extractor.advance();
-
+                        int wigor = decoder.getOutputFormat().getInteger(MediaFormat.KEY_WIDTH);
+                        int wigo2r = decoder.getInputFormat().getInteger(MediaFormat.KEY_WIDTH);
+                        int higor = decoder.getOutputFormat().getInteger(MediaFormat.KEY_HEIGHT);
+                        int higo2r = decoder.getInputFormat().getInteger(MediaFormat.KEY_HEIGHT);
+                        Log.e("IGOR","Width is: "+wigor+" a drugi je "+wigo2r+"| Height is"+higor+" a drugi je" +higo2r);
                         current_size = extractor.getSampleTime();
                     }
                 } else {
                     if (VERBOSE) Log.d(TAG, "input buffer not available");
                 }
             }
+
 
             if (!outputDone) {
                 int decoderStatus = decoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
@@ -248,7 +275,8 @@ public class MoviePlayer {
                     if (VERBOSE) Log.d(TAG, "decoder output buffers changed");
                 } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = decoder.getOutputFormat();
-                    if (VERBOSE) Log.d(TAG, "decoder output format changed: " + newFormat);
+                    Log.e(TAG, "GRKI decoder output format changed: " + newFormat);
+                    //MainActivity.change(newFormat.getInteger(MediaFormat.));
                 } else if (decoderStatus < 0) {
                     throw new RuntimeException(
                             "unexpected result from decoder.dequeueOutputBuffer: " +
@@ -299,6 +327,9 @@ public class MoviePlayer {
         }
     }
 
+    public long temp(){
+        return mBufferInfo.presentationTimeUs;
+    }
 
     public static class PlayTask implements Runnable {
         private static final int MSG_PLAY_STOPPED = 0;
@@ -317,10 +348,6 @@ public class MoviePlayer {
             mFeedback = feedback;
 
             mLocalHandler = new LocalHandler();
-        }
-
-        public void setLoopMode(boolean loopMode) {
-            mDoLoop = loopMode;
         }
 
         public void execute() {

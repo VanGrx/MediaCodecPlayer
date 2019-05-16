@@ -1,8 +1,9 @@
 package com.example.smarija.mediaplayer;
 
+
 import android.graphics.Color;
-import android.util.Log;
 import android.widget.ProgressBar;
+
 
 /**
  * Created by smarija on 26.4.2017.
@@ -23,7 +24,7 @@ public class ProgressBarThread extends Thread {
 
     @Override
     public void run() {
-        Log.e("ÏGOR","DURATION: "+c_.file_size);
+
         long duration = c_.file_size;
         pb_.setMax((int)duration);
         pb_.setProgress(0);
@@ -38,7 +39,6 @@ public class ProgressBarThread extends Thread {
                 currentPosition= (int)c_.current_size;
                 if(currentPosition==-1)
                     currentPosition=duration;
-                Log.e("ÏGOR","DURATION: "+c_.current_size);
             } catch (InterruptedException e) {
                 return;
             } catch (Exception e) {
