@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.allOf;
 public class test8_diff_formats {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<Fragment2> mActivityTestRule = new ActivityTestRule<>(Fragment2.class);
 
     @Test
     public void test8_diff_formats() {

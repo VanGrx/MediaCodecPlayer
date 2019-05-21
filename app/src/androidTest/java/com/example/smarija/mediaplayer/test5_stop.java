@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.allOf;
 public class test5_stop {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    public ActivityTestRule<Fragment2> mActivityTestRule = new ActivityTestRule<>(Fragment2.class);
 
     @Test
     public void test5_stop() {

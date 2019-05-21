@@ -7,116 +7,23 @@
     android:layout_height="match_parent"
     android:id="@+id/mainlayout"
 
-    tools:context="com.example.smarija.mediaplayer.MainActivity"
-    android:weightSum="1">
+    tools:context=".MainActivity"
+    >
 
-    <LinearLayout
-        android:orientation="vertical"
+    <fragment
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:id="@+id/fragment1"
+        android:name="com.example.smarija.mediaplayer.FileFragment"
+        />
 
-
-        <TextureView
-            android:id="@+id/movie_texture_view"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_height="0dp"
-            android:layout_weight="1 "/>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-        <LinearLayout
-            android:id="@+id/one"
-            android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:background="#ffffff"
-            android:weightSum="1">
-
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginLeft="15dp"
-                android:background="@drawable/play_selector"
-                android:onClick="clickPlay"/>
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:background="@drawable/pause_selector"
-                android:layout_marginLeft="15dp"
-
-                android:onClick="pause"/>
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:background="@drawable/stop_selector"
-                android:layout_marginLeft="15dp"
-                android:onClick="stopPlayback"/>
-
-            <Button
-                android:id="@+id/button6"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginLeft="15dp"
-                android:background="@drawable/rewind_selector"
-                android:onClick="rewind"/>
-
-
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginLeft="15dp"
-                android:background="@drawable/ff_selector"
-                android:onClick="fastForward"/>
-
-
-            <Button
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="630dp"
-                android:id="@+id/browse"
-                android:background="@drawable/browse_selector"
-                 />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginLeft="15dp"
-                android:layout_below="@+id/browse"
-                android:layout_marginTop="0dp"
-                android:id="@+id/selected"
-                android:textStyle="bold"
-                android:textColor="#4189E1"
-                android:textSize="20sp"
-                android:text="Selected file" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_below="@+id/selected"
-                android:id="@+id/file_path"
-                android:text="No file has been selected"
-                android:textSize="18sp" />
-
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-    <View
+    <fragment
         android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:id="@+id/fragment2"
+        android:name="com.example.smarija.mediaplayer.Fragment2" />
+
+
 </LinearLayout>

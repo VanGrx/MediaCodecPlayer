@@ -117,7 +117,7 @@ public class MoviePlayer {
 
     public void play() throws IOException {
         flag_play = true;
-        MediaExtractor extractor = null;
+        extractor = null;
         decoder = null;
 
         if (!mSourceFile.canRead()) {
@@ -276,7 +276,7 @@ public class MoviePlayer {
                 } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = decoder.getOutputFormat();
                     Log.e(TAG, "GRKI decoder output format changed: " + newFormat);
-                    //MainActivity.change(newFormat.getInteger(MediaFormat.));
+                    //Fragment2.change(newFormat.getInteger(MediaFormat.));
                 } else if (decoderStatus < 0) {
                     throw new RuntimeException(
                             "unexpected result from decoder.dequeueOutputBuffer: " +
