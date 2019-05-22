@@ -1,19 +1,47 @@
 package com.example.smarija.mediaplayer;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
-import com.example.smarija.mediaplayer.dummy.DummyContent;
+import java.io.File;
 
-public class MainActivity extends Activity implements FileFragment.OnListFragmentInteractionListener {
+
+public class MainActivity extends Activity {
 // implements AdapterView.OnItemSelectedListener, View.OnClickListener,
 //            TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+
+
+            int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                // We don't have permission so prompt the user
+                ActivityCompat.requestPermissions(
+                        this,
+                        PERMISSIONS_STORAGE,
+                        REQUEST_EXTERNAL_STORAGE
+                );
+            }
+
+
+            File Directory = new File("/mnt/sdcard");
+
+            Log.e("IGOR", "Directory in MainActivity  "+String.valueOf(Directory.listFiles()==null));
+
 
 //            mTextureView = (TextureView) findViewById(R.id.movie_texture_view);
 //            mTextureView.setSurfaceTextureListener(this);
@@ -40,10 +68,7 @@ public class MainActivity extends Activity implements FileFragment.OnListFragmen
 
         }
 
-    @Override
-    public void onListFragmentInteraction(DummyContent.FileItem item) {
 
-    }
 
 
 //        @Override
@@ -120,11 +145,7 @@ public class MainActivity extends Activity implements FileFragment.OnListFragmen
 //
 //        @Override public void onNothingSelected(AdapterView<?> parent) {}
 //
-//        private static final int REQUEST_EXTERNAL_STORAGE = 1;
-//        private static String[] PERMISSIONS_STORAGE = {
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//        };
+
 //
 //        public void clickPlay(@SuppressWarnings("unused") View unused) {
 //            LinearLayout one = (LinearLayout) findViewById(R.id.one);
@@ -171,16 +192,7 @@ public class MainActivity extends Activity implements FileFragment.OnListFragmen
 ////                    selectedFile = new File("/sdcard/Movies/big_buck_bunny.mp4");
 //                    // Check if we have write permission
 //                    Activity activity = (Activity) Fragment2.this;
-//                    int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//
-//                    if (permission != PackageManager.PERMISSION_GRANTED) {
-//                        // We don't have permission so prompt the user
-//                        ActivityCompat.requestPermissions(
-//                                activity,
-//                                PERMISSIONS_STORAGE,
-//                                REQUEST_EXTERNAL_STORAGE
-//                        );
-//                    }
+
 //                    player = new MoviePlayer(selectedFile, surface, callback);
 //                } catch (IOException ioe) {
 //                    surface.release();
