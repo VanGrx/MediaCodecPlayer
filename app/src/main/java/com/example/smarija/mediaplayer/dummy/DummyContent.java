@@ -1,53 +1,64 @@
 package com.example.smarija.mediaplayer.dummy;
 
+import android.util.Log;
+
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- * <p>
- * TODO: Replace all uses of this class before publishing your app.
- */
-public class DummyContent {
 
+public class DummyContent {
+    /**
+     *
+     */
+    public static File Directory;
+    private final static String DEFAULT_INITIAL_DIRECTORY = "/mnt/sdcard";
+    protected static boolean ShowHiddenFiles = false;
     /**
      * An array of sample (dummy) items.
      */
     public static final List<FileItem> ITEMS = new ArrayList<FileItem>();
-
     /**
      * A map of sample (dummy) items, by ID.
      */
     public static final Map<String, FileItem> ITEM_MAP = new HashMap<String, FileItem>();
 
-    private static final int COUNT = 25;
 
     static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
+
+            addItems();
+
+    }
+
+    private static void addItems() {
+        // Set initial directory
+        Directory = new File(DEFAULT_INITIAL_DIRECTORY);
+        String[] acceptedFileExtensions= new String[] {};
+
+        ExtensionFilenameFilter filter =
+                new ExtensionFilenameFilter(acceptedFileExtensions);
+        File[] files = Directory.listFiles(filter);
+        if(files != null && files.length > 0) {
+
+            for(File f : files) {
+
+                if(f.isHidden() && !ShowHiddenFiles) {
+
+                    continue;
+                }
+
+                ITEMS.add(new FileItem(f.getName(), f));
+            }
+
+            Collections.sort(ITEMS, new FileComparator());
         }
-    }
-
-    private static void addItem(FileItem item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
-    }
-
-    private static FileItem createDummyItem(int position) {
-        return new FileItem(String.valueOf(position), "Item " + position, makeDetails(position));
-    }
-
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+//        ITEMS.add(item);
+//        ITEM_MAP.put(item.id, item);
     }
 
     /**
@@ -55,18 +66,72 @@ public class DummyContent {
      */
     public static class FileItem {
         public final String id;
-        public final String content;
-        public final String details;
+        public final File file;
 
-        public FileItem(String id, String content, String details) {
+        public FileItem(String id, File file) {
             this.id = id;
-            this.content = content;
-            this.details = details;
+            this.file = file;
         }
 
         @Override
         public String toString() {
-            return content;
+            return id;
+        }
+    }
+    private static class ExtensionFilenameFilter implements FilenameFilter {
+
+        private String[] Extensions;
+
+        public ExtensionFilenameFilter(String[] extensions) {
+
+            super();
+            Extensions = extensions;
+        }
+
+        public boolean accept(File dir, String filename) { //biranje direktorijuma i fajlova
+
+            if(new File(dir, filename).isDirectory()) {
+
+                // Accept all directory names
+                return true;
+            }
+
+            if(Extensions != null && Extensions.length > 0) {
+
+                for(int i = 0; i < Extensions.length; i++) {
+
+                    if(filename.endsWith(Extensions[i])) {
+
+                        // The filename ends with the extension
+                        return true;
+                    }
+                }
+                // The filename did not match any of the extensions
+                return false;
+            }
+            // No extensions has been set. Accept all file extensions.
+            return true;
+        }
+    }
+    private static class FileComparator implements Comparator<FileItem> {
+
+        public int compare(FileItem fi1, FileItem fi2) {
+            File f1 = fi1.file;
+            File f2 = fi2.file;
+
+            if(f1 == f2)
+                return 0;
+
+            if(f1.isDirectory() && f2.isFile())
+                // Show directories above files
+                return -1;
+
+            if(f1.isFile() && f2.isDirectory())
+                // Show files below directories
+                return 1;
+
+            // Sort the directories alphabetically
+            return f1.getName().compareToIgnoreCase(f2.getName());
         }
     }
 }
