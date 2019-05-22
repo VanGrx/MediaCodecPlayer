@@ -108,7 +108,7 @@ public class FileFragment extends ListFragment {
         Files.clear();
         FileFragment.ExtensionFilenameFilter filter =
                 new FileFragment.ExtensionFilenameFilter(acceptedFileExtensions);
-
+        File fileBack= new File(Directory.getParent());
         File[] files = Directory.listFiles();
 
         Log.e("IGOR", "files is "+String.valueOf(files==null));
@@ -127,8 +127,9 @@ public class FileFragment extends ListFragment {
             }
 
             Collections.sort(Files, new FileFragment.FileComparator());
-        }
 
+        }
+        Files.add(0, fileBack);
         Adapter.notifyDataSetChanged();
     }
 
@@ -149,7 +150,6 @@ public class FileFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
 
         File newFile = (File)l.getItemAtPosition(position);
-
         if(newFile.isFile()) {
 
 //            Intent extra = new Intent();
@@ -162,6 +162,8 @@ public class FileFragment extends ListFragment {
             Directory = newFile;
             refreshFilesList();
         }
+        Communicate c = (Communicate) getActivity();
+        c.sendText(newFile.getAbsolutePath());
 
         super.onListItemClick(l, v, position, id);
     }
@@ -197,7 +199,10 @@ public class FileFragment extends ListFragment {
             TextView textView = (TextView)row.findViewById(R.id.file_picker_text);
             textView.setSingleLine(true);
             textView.setText(object.getName());
-
+            if(position==0){
+                imageView.setImageResource(R.drawable.ff);
+                return row;
+            }
             if(object.isFile())
                 imageView.setImageResource(R.drawable.file);
 

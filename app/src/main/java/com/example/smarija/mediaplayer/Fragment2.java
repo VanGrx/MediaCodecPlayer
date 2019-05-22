@@ -33,7 +33,7 @@ public class Fragment2 extends Fragment {
 // implements OnItemSelectedListener, View.OnClickListener,
 //        TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
     private static final String TAG = "PLAYER";
-
+    TextView textView;
     private TextureView mTextureView;
 
     private boolean mShowStopLabel;
@@ -89,7 +89,13 @@ public class Fragment2 extends Fragment {
 //            }
 //
 //        });
-        return inflater.inflate(R.layout.fragment_fragment2, container, false);
+        View view= inflater.inflate(R.layout.fragment_fragment2, container, false);
+        textView = view.findViewById(R.id.textView);
+        return view;
+    }
+
+    public void updateText(String text) {
+        textView.setText(text);
     }
 
 

@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment2"
     android:background="#080808"
     android:orientation="horizontal"
-    android:id="@+id/mainlayout"
-    android:weightSum="1">
+    android:weightSum="1"
+    tools:context=".Fragment2">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+           android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:text="Probni tekst"
+            android:textColor="#FFFFFF"/>
 
         <TextureView
             android:id="@+id/movie_texture_view"
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
             android:layout_height="0dp"
-            android:layout_weight="1 "/>
+            android:layout_marginTop="10dp"
+            android:layout_weight="1 " />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -42,24 +50,24 @@
                 android:layout_height="35dp"
                 android:layout_marginLeft="15dp"
                 android:background="@drawable/play_selector"
-                android:onClick="clickPlay"/>
+                android:onClick="clickPlay" />
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@drawable/pause_selector"
                 android:layout_marginLeft="15dp"
+                android:background="@drawable/pause_selector"
 
-                android:onClick="pause"/>
+                android:onClick="pause" />
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@drawable/stop_selector"
                 android:layout_marginLeft="15dp"
-                android:onClick="stopPlayback"/>
+                android:background="@drawable/stop_selector"
+                android:onClick="stopPlayback" />
 
             <Button
                 android:id="@+id/button6"
@@ -67,7 +75,7 @@
                 android:layout_height="35dp"
                 android:layout_marginLeft="15dp"
                 android:background="@drawable/rewind_selector"
-                android:onClick="rewind"/>
+                android:onClick="rewind" />
 
 
             <Button
@@ -76,44 +84,43 @@
                 android:layout_height="35dp"
                 android:layout_marginLeft="15dp"
                 android:background="@drawable/ff_selector"
-                android:onClick="fastForward"/>
+                android:onClick="fastForward" />
 
 
             <Button
+                android:id="@+id/browse"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="630dp"
-                android:id="@+id/browse"
-                android:background="@drawable/browse_selector"
-                />
+                android:background="@drawable/browse_selector" />
 
             <TextView
+                android:id="@+id/selected"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="15dp"
                 android:layout_below="@+id/browse"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="0dp"
-                android:id="@+id/selected"
-                android:textStyle="bold"
+                android:text="Selected file"
                 android:textColor="#4189E1"
                 android:textSize="20sp"
-                android:text="Selected file" />
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/file_path"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginLeft="0dp"
                 android:layout_below="@+id/selected"
-                android:id="@+id/file_path"
+                android:layout_marginLeft="0dp"
                 android:text="No file has been selected"
                 android:textSize="18sp" />
-
 
 
         </LinearLayout>
 
     </LinearLayout>
+
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"

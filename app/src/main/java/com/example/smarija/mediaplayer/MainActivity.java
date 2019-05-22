@@ -9,8 +9,10 @@ import android.util.Log;
 
 import java.io.File;
 
+import static com.example.smarija.mediaplayer.R.id.fragment2;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends Activity implements Communicate {
 // implements AdapterView.OnItemSelectedListener, View.OnClickListener,
 //            TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
 
@@ -68,7 +70,11 @@ public class MainActivity extends Activity {
 
         }
 
-
+    @Override
+    public void sendText(String s) {
+        Fragment2 frag=(Fragment2) getFragmentManager().findFragmentById(fragment2);
+        frag.updateText(s);
+    }
 
 
 //        @Override
