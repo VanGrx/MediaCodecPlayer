@@ -7,6 +7,7 @@
     android:background="#080808"
     android:orientation="horizontal"
     android:weightSum="1"
+    android:name="com.example.smarija.mediaplayer.Fragment2"
     tools:context=".Fragment2">
 
     <LinearLayout
@@ -49,8 +50,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/play_selector"
-                android:onClick="clickPlay" />
+                android:background="@drawable/play_selector" />
 
             <Button
                 android:id="@+id/button2"

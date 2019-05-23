@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.View;
 
 import java.io.File;
 
@@ -69,6 +70,8 @@ public class MainActivity extends Activity implements Communicate {
 //            });
 
         }
+
+
 
     @Override
     public void sendText(String s) {
