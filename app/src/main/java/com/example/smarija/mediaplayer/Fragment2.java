@@ -1,10 +1,8 @@
 package com.example.smarija.mediaplayer;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.MediaFormat;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Matrix;
@@ -17,18 +15,15 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
 
 import java.io.File;
 import java.io.IOException;
 
-import static android.app.Activity.RESULT_OK;
 
 
 public class Fragment2 extends Fragment implements TextureView.SurfaceTextureListener, View.OnClickListener, MoviePlayer.PlayerFeedback {
@@ -38,10 +33,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     TextView textView;
     private TextureView mTextureView;
 
-    private boolean mShowStopLabel;
     private MoviePlayer.PlayTask mPlayTask;
-    private boolean mSurfaceTextureReady = false;
-    public MediaFormat ff;
     SpeedControlCallback callback;
 
     ProgressBar pb;
@@ -56,11 +48,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     public boolean stop_ff = false;
 
 
-
-    //za otvaranje iz fajla:
-    private static final int REQUEST_PICK_FILE = 1;
     private TextView filePath;
-    private Button Browse;
     private File selectedFile;
 
     private boolean show = false;
@@ -78,15 +66,15 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         pb.setBackgroundColor(Color.WHITE);
 
        filePath = view.findViewById(R.id.file_path);
-        Browse = view.findViewById(R.id.browse);
-        Browse.setOnClickListener(this);
+        Button browse = view.findViewById(R.id.browse);
+        browse.setOnClickListener(this);
 
         buttonPlay = view.findViewById(R.id.button1);
 
         buttonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickPlay(v);
+                clickPlay();
             }
         });
 
@@ -157,7 +145,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
         Log.d(TAG, "SurfaceTexture ready (" + width + "x" + height + ")");
-        mSurfaceTextureReady = true;
     }
 
     @Override
@@ -165,7 +152,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture st) {
-        mSurfaceTextureReady = false;
         return true;
     }
 
@@ -180,8 +166,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    public void clickPlay(View unused) {
-        LinearLayout one = (LinearLayout) getActivity().findViewById(R.id.one);
+    public void clickPlay() {
+        LinearLayout one = getActivity().findViewById(R.id.one);
         one.setVisibility(View.INVISIBLE);
         show = true;
         if(inited) {
@@ -244,18 +230,14 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             //play video and audio
             mPlayTask = new MoviePlayer.PlayTask(player, this);
             //a = new Audio();
-            if(selectedFile == null){
-                //a.useDescriptop = true;
-                //a.mfis=this.getResources().openRawResource(R.raw.test);
-                //a.msampleFD = getResources().openRawResourceFd(R.raw.big_buck_bunny);
-            }
-            else {
-                //a.fis = selectedFile;
-                //a.sampleFD = selectedFile;
-            }
+            //a.useDescriptop = true;
+            //a.mfis=this.getResources().openRawResource(R.raw.test);
+            //a.msampleFD = getResources().openRawResourceFd(R.raw.big_buck_bunny);
+            //a.fis = selectedFile;
+            //a.sampleFD = selectedFile;
             //a.start();
 
-            mShowStopLabel = true;
+            boolean mShowStopLabel = true;
             pbt= new ProgressBarThread(pb,player);
             pbt.start();
             mPlayTask.execute();
@@ -290,7 +272,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                 callback.setFixedPlaybackRate(0);
                 player.mFrameCallback.resetTime();
                 return;
-            } else {
             }
         }
     }

@@ -11,12 +11,12 @@ import android.widget.ProgressBar;
 
 public class ProgressBarThread extends Thread {
 
-    public ProgressBar pb_;
-    public com.example.smarija.mediaplayer.MoviePlayer c_;
+    private ProgressBar pb_;
+    private com.example.smarija.mediaplayer.MoviePlayer c_;
 
     private boolean mIsStopRequested;
 
-    public ProgressBarThread(ProgressBar pb, com.example.smarija.mediaplayer.MoviePlayer c) {
+    ProgressBarThread(ProgressBar pb, com.example.smarija.mediaplayer.MoviePlayer c) {
         pb_=pb;
         c_=c;
 
@@ -48,7 +48,7 @@ public class ProgressBarThread extends Thread {
         }
     }
 
-    public void requestStop() {
+    void requestStop() {
         mIsStopRequested = true;
     }
 }

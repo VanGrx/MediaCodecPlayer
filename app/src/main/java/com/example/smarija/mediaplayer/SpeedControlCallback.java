@@ -9,12 +9,11 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
     private static final long ONE_MILLION = 1000000L;
 
     private long mPrevPresentUsec;
-    public long mPrevMonoUsec;
+    private long mPrevMonoUsec;
     private long mFixedFrameDurationUsec;
     private boolean mLoopReset;
-    long frameDelta;
 
-    public void setFixedPlaybackRate(int fps) {
+    void setFixedPlaybackRate(int fps) {
         if(fps==0)
             mFixedFrameDurationUsec=0;
         else
@@ -35,6 +34,7 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
                 mPrevPresentUsec = presentationTimeUsec - ONE_MILLION / 30;
                 mLoopReset = false;
             }
+            long frameDelta;
             if (mFixedFrameDurationUsec != 0) {
                 frameDelta = mFixedFrameDurationUsec;
             } else {
@@ -70,7 +70,7 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
                     } else {
                         Thread.sleep(sleepTimeUsec / 1000, (int) (sleepTimeUsec % 1000) * 1000);
                     }
-                } catch (InterruptedException ie) {}
+                } catch (InterruptedException ignored) {}
                 nowUsec = System.nanoTime() / 1000;
             }
 

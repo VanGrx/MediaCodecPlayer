@@ -38,7 +38,6 @@ public class Audio extends Thread{
 
     File sampleFD;
     private boolean mIsStopRequested;
-    public InputStream mfis;
     public AssetFileDescriptor msampleFD;
     public boolean useDescriptop;
     public  MediaFormat oformat ;
@@ -138,14 +137,13 @@ public class Audio extends Thread{
                     BufferInfo info = new BufferInfo();
                     final int res = codec.dequeueOutputBuffer(info, 1000);
                     if (res >= 0) {
-                        int outputBufIndex = res;
-                        ByteBuffer buf = codecOutputBuffers[outputBufIndex];
+                        ByteBuffer buf = codecOutputBuffers[res];
                         final byte[] chunk = new byte[info.size];
                         buf.get(chunk); // Read the buffer all at once
                         buf.clear(); // ** MUST DO!!! OTHERWISE THE NEXT TIME YOU GET THIS SAME BUFFER BAD THINGS WILL HAPPEN
                         audioTrack.play(); if (chunk.length > 0)
                             audioTrack.write(chunk, 0, chunk.length);
-                        codec.releaseOutputBuffer(outputBufIndex, false /* render */);
+                        codec.releaseOutputBuffer(res, false /* render */);
                          if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0)
                             sawOutputEOS = true;
                     }
@@ -177,8 +175,5 @@ public class Audio extends Thread{
             }
         }
         return -1;
-    }
-    public void requestStop() {
-        mIsStopRequested = true;
     }
 }

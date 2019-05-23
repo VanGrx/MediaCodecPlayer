@@ -3,7 +3,7 @@ package com.example.smarija.mediaplayer;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +14,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.smarija.mediaplayer.R.*;
-import static com.example.smarija.mediaplayer.R.color.*;
-import static com.example.smarija.mediaplayer.R.drawable.rewind_selector;
 
 
 /**
@@ -33,7 +31,6 @@ import static com.example.smarija.mediaplayer.R.drawable.rewind_selector;
  */
 public class FileFragment extends ListFragment {
 
-    public final static String EXTRA_FILE_PATH = "file_path";
     public final static String EXTRA_SHOW_HIDDEN_FILES = "show_hidden_files";
     public final static String EXTRA_ACCEPTED_FILE_EXTENSIONS = "*";
     private final static String DEFAULT_INITIAL_DIRECTORY = "/mnt/sdcard";
@@ -48,16 +45,13 @@ public class FileFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        LayoutInflater inflator = (LayoutInflater)
-//                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
 
         // Set initial directory
         Directory = new File(DEFAULT_INITIAL_DIRECTORY);
 
 
         // Initialize the ArrayList
-        Files = new ArrayList<File>();
+        Files = new ArrayList<>();
 
         // Set the ListAdapter
         Adapter = new FileFragment.FileFragmentListAdapter(getActivity(), Files);
@@ -65,27 +59,23 @@ public class FileFragment extends ListFragment {
 
 
         // Initialize the extensions array to allow any file extensions
-        acceptedFileExtensions = new String[] {};
+        acceptedFileExtensions = new String[]{};
 
         // Get intent extras
 //        if(getActivity().getIntent().hasExtra(EXTRA_FILE_PATH))
 //            Directory = new File(getActivity().getIntent().getStringExtra(EXTRA_FILE_PATH));
 
-        if(getActivity().getIntent().hasExtra(EXTRA_SHOW_HIDDEN_FILES))
+        if (getActivity().getIntent().hasExtra(EXTRA_SHOW_HIDDEN_FILES))
             ShowHiddenFiles = getActivity().getIntent().getBooleanExtra(EXTRA_SHOW_HIDDEN_FILES, false);
 
-        if(getActivity().getIntent().hasExtra(EXTRA_ACCEPTED_FILE_EXTENSIONS)) {
+        if (getActivity().getIntent().hasExtra(EXTRA_ACCEPTED_FILE_EXTENSIONS)) {
 
             ArrayList<String> collection =
                     getActivity().getIntent().getStringArrayListExtra(EXTRA_ACCEPTED_FILE_EXTENSIONS);
 
-            acceptedFileExtensions = (String[])
-                    collection.toArray(new String[collection.size()]);
-            for(int i=0;i<acceptedFileExtensions.length;i++)
-            {
-            }
+            acceptedFileExtensions = collection.toArray(new String[0]);
+
         }
-        Log.e("IGOR","REFRESHUJ!!!");
         refreshFilesList();
     }
 
@@ -93,7 +83,7 @@ public class FileFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.e("IGOR", "Directory is "+String.valueOf(Directory.listFiles()==null));
+        Log.e("IGOR", "Directory is " + String.valueOf(Directory.listFiles() == null));
 
         return inflater.inflate(layout.fragment_file_list, container, false);
     }
@@ -103,30 +93,26 @@ public class FileFragment extends ListFragment {
         refreshFilesList();
         super.onResume();
     }
-@Override
-public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
 
-    getListView().setSelector(R.drawable.level_list_selector);
-}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getListView().setSelector(R.drawable.level_list_selector);
+    }
 
     protected void refreshFilesList() {
 
         Files.clear();
-        FileFragment.ExtensionFilenameFilter filter =
-                new FileFragment.ExtensionFilenameFilter(acceptedFileExtensions);
-        File fileBack= new File(Directory.getParent());
+        File fileBack = new File(Directory.getParent());
         File[] files = Directory.listFiles();
 
-        Log.e("IGOR", "files is "+String.valueOf(files==null));
 
-        if(files != null && files.length > 0) {
+        if (files != null && files.length > 0) {
 
-            for(File f : files) {
-                Log.e("IGOR","Found file "+f);
+            for (File f : files) {
 
-                if(f.isHidden() && !ShowHiddenFiles) {
-
+                if (f.isHidden() && !ShowHiddenFiles) {
                     continue;
                 }
 
@@ -140,78 +126,61 @@ public void onActivityCreated(Bundle savedInstanceState) {
         Adapter.notifyDataSetChanged();
     }
 
-//    @Override
-//    public void onBackPressed() {
-//
-//        if(Directory.getParentFile() != null) {
-//
-//            Directory = Directory.getParentFile();
-//            refreshFilesList();
-//            return;
-//        }
-//
-//        super.onBackPressed();
-//    }
-
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
-        File newFile = (File)l.getItemAtPosition(position);
-        if(newFile.isFile()) {
-
-//            Intent extra = new Intent();
-//            extra.putExtra(EXTRA_FILE_PATH, newFile.getAbsolutePath());
-//            setResult(RESULT_OK, extra);
-//            finish();
-        }
-        else {
+        File newFile = (File) l.getItemAtPosition(position);
+        if (!newFile.isFile()) {
 
             Directory = newFile;
             refreshFilesList();
         }
-        Communicate c = (Communicate) getActivity();
-        Log.e("PROBA",newFile.getAbsolutePath());
+        OnListFragmentInteractionListener c = (OnListFragmentInteractionListener) getActivity();
         c.sendText(newFile.getAbsolutePath());
 
         super.onListItemClick(l, v, position, id);
+    }
+
+    public interface OnListFragmentInteractionListener {
+        void sendText(String s);
     }
 
     private class FileFragmentListAdapter extends ArrayAdapter<File> {
 
         private List<File> mObjects;
 
-        public FileFragmentListAdapter(Context context, List<File> objects) {
+        FileFragmentListAdapter(Context context, List<File> objects) {
 
             super(context, layout.list_item, android.R.id.text1, objects);
             mObjects = objects;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
-            View row = null;
+            View row;
 
-            if(convertView == null) {
+            if (convertView == null) {
 
                 LayoutInflater inflater = (LayoutInflater)
                         getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                row = inflater.inflate(layout.list_item, parent, false);
-            }
-            else
+                row = Objects.requireNonNull(inflater).inflate(layout.list_item, parent, false);
+            } else
                 row = convertView;
 
             File object = mObjects.get(position);
 
-            ImageView imageView = (ImageView)row.findViewById(id.file_picker_image);
-            TextView textView = (TextView)row.findViewById(id.file_picker_text);
+            ImageView imageView = row.findViewById(id.file_picker_image);
+            TextView textView = row.findViewById(id.file_picker_text);
             textView.setSingleLine(true);
             textView.setText(object.getName());
-            if(position==0){
+            if (position == 0) {
                 imageView.setImageResource(drawable.images_back);
                 return row;
             }
-            if(object.isFile())
+            if (object.isFile())
                 imageView.setImageResource(drawable.file_icon);
 
             else
@@ -225,14 +194,14 @@ public void onActivityCreated(Bundle savedInstanceState) {
 
         public int compare(File f1, File f2) {
 
-            if(f1 == f2)
+            if (f1 == f2)
                 return 0;
 
-            if(f1.isDirectory() && f2.isFile())
+            if (f1.isDirectory() && f2.isFile())
                 // Show directories above files
                 return -1;
 
-            if(f1.isFile() && f2.isDirectory())
+            if (f1.isFile() && f2.isDirectory())
                 // Show files below directories
                 return 1;
 
@@ -241,39 +210,4 @@ public void onActivityCreated(Bundle savedInstanceState) {
         }
     }
 
-    private class ExtensionFilenameFilter implements FilenameFilter {
-
-        private String[] Extensions;
-
-        public ExtensionFilenameFilter(String[] extensions) {
-
-            super();
-            Extensions = extensions;
-        }
-
-        public boolean accept(File dir, String filename) { //biranje direktorijuma i fajlova
-
-            if(new File(dir, filename).isDirectory()) {
-
-                // Accept all directory names
-                return true;
-            }
-
-            if(Extensions != null && Extensions.length > 0) {
-
-                for(int i = 0; i < Extensions.length; i++) {
-
-                    if(filename.endsWith(Extensions[i])) {
-
-                        // The filename ends with the extension
-                        return true;
-                    }
-                }
-                // The filename did not match any of the extensions
-                return false;
-            }
-            // No extensions has been set. Accept all file extensions.
-            return true;
-        }
-    }
 }

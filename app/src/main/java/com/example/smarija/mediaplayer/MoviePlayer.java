@@ -1,14 +1,10 @@
 package com.example.smarija.mediaplayer;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Surface;
 
@@ -18,7 +14,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 
-public class MoviePlayer {
+class MoviePlayer {
     private static final String TAG = "PLAYER";
     private static final boolean VERBOSE = false;
 
@@ -26,8 +22,8 @@ public class MoviePlayer {
 
     private volatile boolean mIsStopRequested;
 
-    public MediaExtractor extractor;
-    public MediaCodec decoder;
+    private MediaExtractor extractor;
+    private MediaCodec decoder;
 
     private File mSourceFile;
     private Surface mOutputSurface;
@@ -37,15 +33,15 @@ public class MoviePlayer {
     private int mVideoHeight;
 
     private long rewind_timeout = 20000;
-    public boolean flag_stop = false;
+    private boolean flag_stop = false;
 
-    public long file_size = 0;
-    public long current_size = 0;
+    long file_size = 0;
+    long current_size = 0;
 
-    public boolean flag_play = false;
-    public boolean paused = false;
-    public boolean fastForward = false;
-    public boolean rewind = false;
+    private boolean flag_play = false;
+    boolean paused = false;
+    boolean fastForward = false;
+    boolean rewind = false;
 
     public interface PlayerFeedback {
         void playbackStopped();
@@ -63,7 +59,7 @@ public class MoviePlayer {
     }
 
 
-    public MoviePlayer(File sourceFile, Surface outputSurface, FrameCallback frameCallback)
+    MoviePlayer(File sourceFile, Surface outputSurface, FrameCallback frameCallback)
             throws IOException {
         mSourceFile = sourceFile;
         mOutputSurface = outputSurface;
@@ -98,24 +94,24 @@ public class MoviePlayer {
         }
     }
 
-    public int getVideoWidth() {
+    int getVideoWidth() {
         return mVideoWidth;
     }
 
-    public int getVideoHeight() {
+    int getVideoHeight() {
         return mVideoHeight;
     }
 
-    public void setLoopMode(boolean loopMode) {
+    private void setLoopMode(boolean loopMode) {
         mLoop = loopMode;
     }
 
 
-    public void requestStop() {
+    private void requestStop() {
         mIsStopRequested = true;
     }
 
-    public void play() throws IOException {
+    private void play() throws IOException {
         flag_play = true;
         extractor = null;
         decoder = null;
@@ -327,7 +323,7 @@ public class MoviePlayer {
         }
     }
 
-    public long temp(){
+    long temp(){
         return mBufferInfo.presentationTimeUs;
     }
 
@@ -343,24 +339,24 @@ public class MoviePlayer {
         private final Object mStopLock = new Object();
         private boolean mStopped = false;
 
-        public PlayTask(MoviePlayer player, PlayerFeedback feedback) {
+        PlayTask(MoviePlayer player, PlayerFeedback feedback) {
             mPlayer = player;
             mFeedback = feedback;
 
             mLocalHandler = new LocalHandler();
         }
 
-        public void execute() {
+        void execute() {
             mPlayer.setLoopMode(mDoLoop);
             mThread = new Thread(this, "Movie Player");
             mThread.start();
         }
 
-        public void requestStop() {
+        void requestStop() {
             mPlayer.requestStop();
         }
 
-        public void waitForStop() {
+        void waitForStop() {
             synchronized (mStopLock) {
                 while (!mStopped) {
                     try {

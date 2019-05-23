@@ -6,14 +6,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.View;
 
 import java.io.File;
 
 import static com.example.smarija.mediaplayer.R.id.fragment2;
 
 
-public class MainActivity extends Activity implements Communicate {
+public class MainActivity extends Activity implements FileFragment.OnListFragmentInteractionListener {
 // implements AdapterView.OnItemSelectedListener, View.OnClickListener,
 //            TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
 
