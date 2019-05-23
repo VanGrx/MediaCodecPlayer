@@ -65,36 +65,39 @@ public class Fragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                 Bundle savedInstanceState) {
+        final View view= inflater.inflate(R.layout.fragment_fragment2, container, false);
 
-
-//        mTextureView = (TextureView) findViewById(R.id.movie_texture_view);
+//        mTextureView = view.findViewById(R.id.movie_texture_view);
 //        mTextureView.setSurfaceTextureListener(this);
 //
-//        pb = (ProgressBar) findViewById(R.id.progressBar);
+//        pb = view.findViewById(R.id.progressBar);
 //        pb.setBackgroundColor(Color.WHITE);
 //
-//       filePath = (TextView) findViewById(R.id.file_path);
-//        Browse = (Button) findViewById(R.id.browse);
+//       filePath = view.findViewById(R.id.file_path);
+//        Browse = view.findViewById(R.id.browse);
 //        Browse.setOnClickListener(this);
 //
-//        LinearLayout rlayout = (LinearLayout) findViewById(R.id.mainlayout);
+//        LinearLayout rlayout = view.findViewById(R.id.mainlayout);
 //        rlayout.setOnClickListener(new View.OnClickListener() {
 //
 //            @Override
 //            public void onClick(View v) {
 //                if(show){
-//                    LinearLayout one = (LinearLayout) findViewById(R.id.one);
+//                    LinearLayout one = view.findViewById(R.id.one);
 //                    one.setVisibility(View.VISIBLE);
 //                }
 //            }
 //
 //        });
-        View view= inflater.inflate(R.layout.fragment_fragment2, container, false);
+
+
         textView = view.findViewById(R.id.textView);
         return view;
     }
 
     public void updateText(String text) {
+        Log.e("PROBA2",text);
+
         textView.setText(text);
     }
 
@@ -172,7 +175,7 @@ public class Fragment2 extends Fragment {
 //    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {}
 //
 //    @Override public void onNothingSelected(AdapterView<?> parent) {}
-//
+////
 //    private static final int REQUEST_EXTERNAL_STORAGE = 1;
 //    private static String[] PERMISSIONS_STORAGE = {
 //            Manifest.permission.READ_EXTERNAL_STORAGE,

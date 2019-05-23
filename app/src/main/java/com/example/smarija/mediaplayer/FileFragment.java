@@ -2,12 +2,8 @@ package com.example.smarija.mediaplayer;
 
 import android.app.ListFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.ColorRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.example.smarija.mediaplayer.R.*;
+import static com.example.smarija.mediaplayer.R.color.*;
+import static com.example.smarija.mediaplayer.R.drawable.rewind_selector;
 
 
 /**
@@ -63,6 +63,7 @@ public class FileFragment extends ListFragment {
         Adapter = new FileFragment.FileFragmentListAdapter(getActivity(), Files);
         setListAdapter(Adapter);
 
+
         // Initialize the extensions array to allow any file extensions
         acceptedFileExtensions = new String[] {};
 
@@ -94,14 +95,20 @@ public class FileFragment extends ListFragment {
 
         Log.e("IGOR", "Directory is "+String.valueOf(Directory.listFiles()==null));
 
-        return inflater.inflate(R.layout.fragment_file_list, container, false);
+        return inflater.inflate(layout.fragment_file_list, container, false);
     }
 
-//    @Override
-//    protected void onResume() {
-//        refreshFilesList();
-//        super.onResume();
-//    }
+    @Override
+    public void onResume() {
+        refreshFilesList();
+        super.onResume();
+    }
+@Override
+public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    getListView().setSelector(R.drawable.level_list_selector);
+}
 
     protected void refreshFilesList() {
 
@@ -163,6 +170,7 @@ public class FileFragment extends ListFragment {
             refreshFilesList();
         }
         Communicate c = (Communicate) getActivity();
+        Log.e("PROBA",newFile.getAbsolutePath());
         c.sendText(newFile.getAbsolutePath());
 
         super.onListItemClick(l, v, position, id);
@@ -174,7 +182,7 @@ public class FileFragment extends ListFragment {
 
         public FileFragmentListAdapter(Context context, List<File> objects) {
 
-            super(context, R.layout.list_item, android.R.id.text1, objects);
+            super(context, layout.list_item, android.R.id.text1, objects);
             mObjects = objects;
         }
 
@@ -188,26 +196,26 @@ public class FileFragment extends ListFragment {
                 LayoutInflater inflater = (LayoutInflater)
                         getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                row = inflater.inflate(R.layout.list_item, parent, false);
+                row = inflater.inflate(layout.list_item, parent, false);
             }
             else
                 row = convertView;
 
             File object = mObjects.get(position);
 
-            ImageView imageView = (ImageView)row.findViewById(R.id.file_picker_image);
-            TextView textView = (TextView)row.findViewById(R.id.file_picker_text);
+            ImageView imageView = (ImageView)row.findViewById(id.file_picker_image);
+            TextView textView = (TextView)row.findViewById(id.file_picker_text);
             textView.setSingleLine(true);
             textView.setText(object.getName());
             if(position==0){
-                imageView.setImageResource(R.drawable.ff);
+                imageView.setImageResource(drawable.images_back);
                 return row;
             }
             if(object.isFile())
-                imageView.setImageResource(R.drawable.file);
+                imageView.setImageResource(drawable.file_icon);
 
             else
-                imageView.setImageResource(R.drawable.pdppr);
+                imageView.setImageResource(drawable.images);
 
             return row;
         }
