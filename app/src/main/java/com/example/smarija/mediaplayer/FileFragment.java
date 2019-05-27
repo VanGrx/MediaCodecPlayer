@@ -135,14 +135,16 @@ public class FileFragment extends ListFragment {
             Directory = newFile;
             refreshFilesList();
         }
-        OnListFragmentInteractionListener c = (OnListFragmentInteractionListener) getActivity();
-        c.sendText(newFile.getAbsolutePath());
+        else {
+            OnListFragmentInteractionListener c = (OnListFragmentInteractionListener) getActivity();
+            c.sendText(newFile.getName(), newFile.getAbsolutePath());
 
+        }
         super.onListItemClick(l, v, position, id);
     }
 
     public interface OnListFragmentInteractionListener {
-        void sendText(String s);
+        void sendText(String s, String path);
     }
 
     private class FileFragmentListAdapter extends ArrayAdapter<File> {
@@ -177,14 +179,14 @@ public class FileFragment extends ListFragment {
             textView.setSingleLine(true);
             textView.setText(object.getName());
             if (position == 0) {
-                imageView.setImageResource(drawable.images_back);
+                imageView.setImageResource(drawable.undo64);
                 return row;
             }
             if (object.isFile())
                 imageView.setImageResource(drawable.file_icon);
 
             else
-                imageView.setImageResource(drawable.images);
+                imageView.setImageResource(drawable.folder64);
 
             return row;
         }

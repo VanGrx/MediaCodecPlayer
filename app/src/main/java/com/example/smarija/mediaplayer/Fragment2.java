@@ -43,6 +43,10 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     Surface surface;
 
     Button buttonPlay;
+    Button buttonStop;
+    Button buttonPause;
+    Button buttonFastForward;
+    Button buttonRewind;
 
     public boolean inited = false;
     public boolean stop_ff = false;
@@ -65,9 +69,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         pb = view.findViewById(R.id.progressBar);
         pb.setBackgroundColor(Color.WHITE);
 
-       filePath = view.findViewById(R.id.file_path);
-        Button browse = view.findViewById(R.id.browse);
-        browse.setOnClickListener(this);
+        filePath = view.findViewById(R.id.file_path);
 
         buttonPlay = view.findViewById(R.id.button1);
 
@@ -75,6 +77,39 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             @Override
             public void onClick(View v) {
                 clickPlay();
+            }
+        });
+        buttonPause = view.findViewById(R.id.button2);
+
+        buttonPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pause();
+            }
+        });
+
+        buttonStop = view.findViewById(R.id.button3);
+
+        buttonStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopPlayback();
+            }
+        });
+        buttonRewind = view.findViewById(R.id.button6);
+
+        buttonRewind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rewind();
+            }
+        });
+        buttonFastForward = view.findViewById(R.id.button4);
+
+        buttonFastForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fastForward();
             }
         });
 
@@ -96,12 +131,14 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         return view;
     }
 
-    public void updateText(String text) {
+    public void updateText(String text, String path) {
         Log.e("PROBA2",text);
 
         textView.setText(text);
-        selectedFile = new File(text);
+        selectedFile = new File(path);
         filePath.setText(selectedFile.getPath());
+        stopPlayback();
+        clickPlay();
     }
 
 
@@ -122,9 +159,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 //                break;
 //        }
     }
-
-
-
 
     @Override
     public void onResume() {
@@ -167,8 +201,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     };
 
     public void clickPlay() {
-        LinearLayout one = getActivity().findViewById(R.id.one);
-        one.setVisibility(View.INVISIBLE);
+//        LinearLayout one = getActivity().findViewById(R.id.one);
+//        one.setVisibility(View.INVISIBLE);
         show = true;
         if(inited) {
             if (player.paused) {
@@ -244,7 +278,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         }
     }
 
-    public void fastForward(@SuppressWarnings("unused") View unused) {
+    public void fastForward() {
 
         if (inited) {
             if(player.rewind==true){
@@ -263,7 +297,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         }
     }
 
-    public void pause(@SuppressWarnings("unused") View unused) {
+    public void pause() {
         if (inited) {
             //a.paused = true;
             player.paused = true;
@@ -276,7 +310,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         }
     }
 
-    public void rewind(@SuppressWarnings("unused") View unused) {
+    public void rewind() {
         if (inited) {
             if(player.fastForward==true){
                 player.fastForward=false;
@@ -293,7 +327,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     }
 
 
-    public void stopPlayback(@SuppressWarnings("unused") View unused) {
+    public void stopPlayback() {
         if (stop_ff == true) {
         } else
         {
@@ -317,10 +351,12 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     player = null;
                     pbt = null;
                     inited = false;
+
                 }
             }
             stop_ff = false;
         }
+
     }
 
     @Override
@@ -359,8 +395,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         txform.postTranslate(xoff, yoff);
         mTextureView.setTransform(txform);
     }
-
-
 
 
 }
