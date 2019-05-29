@@ -125,16 +125,11 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             }
 
         });
-
-//
-//        textView = view.findViewById(R.id.textView);
         return view;
     }
 
     public void updateText(String text, String path) {
-        Log.e("PROBA2",text);
-
-        //textView.setText(text);
+       
         selectedFile = new File(path);
         filePath.setText(selectedFile.getPath());
         stopPlayback();

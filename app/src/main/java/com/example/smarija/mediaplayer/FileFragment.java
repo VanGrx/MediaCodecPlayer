@@ -1,13 +1,9 @@
 package com.example.smarija.mediaplayer;
 
-import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +63,7 @@ public class FileFragment extends ListFragment {
 //        if(getActivity().getIntent().hasExtra(EXTRA_FILE_PATH))
 //            Directory = new File(getActivity().getIntent().getStringExtra(EXTRA_FILE_PATH));
 
-        if (getActivity().getIntent().hasExtra(EXTRA_SHOW_HIDDEN_FILES))
+        if (Objects.requireNonNull(getActivity()).getIntent().hasExtra(EXTRA_SHOW_HIDDEN_FILES))
             ShowHiddenFiles = getActivity().getIntent().getBooleanExtra(EXTRA_SHOW_HIDDEN_FILES, false);
 
         if (getActivity().getIntent().hasExtra(EXTRA_ACCEPTED_FILE_EXTENSIONS)) {
@@ -84,8 +80,6 @@ public class FileFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        Log.e("IGOR", "Directory is " + String.valueOf(Directory.listFiles() == null));
 
         return inflater.inflate(layout.fragment_file_list, container, false);
     }
@@ -139,6 +133,7 @@ public class FileFragment extends ListFragment {
         }
         else {
             OnListFragmentInteractionListener c = (OnListFragmentInteractionListener) getActivity();
+            assert c != null;
             c.sendText(newFile.getName(), newFile.getAbsolutePath());
 
         }
