@@ -1,9 +1,12 @@
 package com.example.smarija.mediaplayer;
 
-import android.app.ListFragment;
+import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,8 +145,12 @@ public class FileFragment extends ListFragment {
         super.onListItemClick(l, v, position, id);
     }
 
+
+
+
     public interface OnListFragmentInteractionListener {
         void sendText(String s, String path);
+
     }
 
     private class FileFragmentListAdapter extends ArrayAdapter<File> {

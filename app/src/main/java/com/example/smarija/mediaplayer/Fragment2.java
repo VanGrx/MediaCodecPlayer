@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.support.v4.app.ActivityCompat;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -30,7 +30,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 // implements OnItemSelectedListener, View.OnClickListener,
 //        TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
     private static final String TAG = "PLAYER";
-    TextView textView;
+   // TextView textView;
     private TextureView mTextureView;
 
     private MoviePlayer.PlayTask mPlayTask;
@@ -126,15 +126,15 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 
         });
 
-
-        textView = view.findViewById(R.id.textView);
+//
+//        textView = view.findViewById(R.id.textView);
         return view;
     }
 
     public void updateText(String text, String path) {
         Log.e("PROBA2",text);
 
-        textView.setText(text);
+        //textView.setText(text);
         selectedFile = new File(path);
         filePath.setText(selectedFile.getPath());
         stopPlayback();

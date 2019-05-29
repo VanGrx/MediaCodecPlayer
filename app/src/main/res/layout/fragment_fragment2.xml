@@ -7,7 +7,6 @@
     android:background="#080808"
     android:orientation="horizontal"
     android:weightSum="1"
-    android:name="com.example.smarija.mediaplayer.Fragment2"
     tools:context=".Fragment2">
 
     <LinearLayout
@@ -16,14 +15,14 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-           android:layout_marginTop="15dp"
-            android:layout_marginLeft="10dp"
-            android:textColor="#FFFFFF"
-            android:textAlignment="center"/>
+        <!--<TextView-->
+            <!--android:id="@+id/textView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+           <!--android:layout_marginTop="15dp"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textAlignment="center"/>-->
 
         <TextureView
             android:id="@+id/movie_texture_view"

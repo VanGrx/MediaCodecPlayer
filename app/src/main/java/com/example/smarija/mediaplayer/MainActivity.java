@@ -1,47 +1,85 @@
 package com.example.smarija.mediaplayer;
 
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.SuppressLint;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+import android.widget.LinearLayout;
 
-import static com.example.smarija.mediaplayer.R.id.fragment2;
 
-
-public class MainActivity extends Activity implements FileFragment.OnListFragmentInteractionListener {
+public class MainActivity extends FragmentActivity implements FileFragment.OnListFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+Fragment2 fragment2;
+FileFragment fragment1;
+BlankFragment blankFragment;
+    @SuppressLint("ResourceType")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-
-            int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                // We don't have permission so prompt the user
-                ActivityCompat.requestPermissions(
-                        this,
-                        PERMISSIONS_STORAGE,
-                        REQUEST_EXTERNAL_STORAGE
-                );
-            }
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
         }
+        LinearLayout ll = findViewById(R.id.mainlayout);
 
+       // LinearLayout ll = new LinearLayout(this);
+        fragment2=new Fragment2();
+        fragment1=new FileFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragment2, fragment2, "someTag2");
+        ft.add(R.id.fragment1, fragment1, "someTag1");
+
+        ft.commit();
+//
+
+    }
 
 
     @Override
     public void sendText(String s, String path) {
-        Fragment2 frag=(Fragment2) getFragmentManager().findFragmentById(fragment2);
-        frag.updateText(s, path);
+       fragment2.updateText(s, path);
+        startTransaction(s);
+
     }
 
-}
+    @SuppressLint("ResourceType")
+    private void startTransaction(String text) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        BlankFragment fr=new BlankFragment();
+        ft.replace(R.id.fragment1, fr, "detailFragment");
+        fr.updateTextView(text);
+//// Start the animated transition.
+        ft.commit();
 
+    }
+
+
+    @Override
+    public void goBack() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        FileFragment fr=new FileFragment();
+        ft.replace(R.id.fragment1, fr, "fileFragment");
+
+//// Start the animated transition.
+        ft.commit();
+    }
+}

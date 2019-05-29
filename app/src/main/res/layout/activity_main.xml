@@ -9,21 +9,33 @@
 
     tools:context=".MainActivity"
     >
-
-    <fragment
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:id="@+id/fragment1"
-        android:name="com.example.smarija.mediaplayer.FileFragment"
-        />
+        android:layout_weight="1">
 
-    <fragment
+    </FrameLayout>
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
         android:id="@+id/fragment2"
-        android:name="com.example.smarija.mediaplayer.Fragment2" />
+        android:layout_weight="2">
+
+    </FrameLayout>
+    <!--<fragment-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/fragment1"-->
+        <!--android:name="com.example.smarija.mediaplayer.FileFragment"-->
+        <!--/>-->
+    <!--<fragment-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="2"-->
+        <!--android:id="@+id/fragment2"-->
+        <!--android:name="com.example.smarija.mediaplayer.Fragment2" />-->
 
 
 </LinearLayout>
