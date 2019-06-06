@@ -1,6 +1,7 @@
 package com.example.smarija.mediaplayer;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.File;
@@ -129,7 +131,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     }
 
     public void updateText(String text, String path) {
-       
+
         selectedFile = new File(path);
         filePath.setText(selectedFile.getPath());
         stopPlayback();
@@ -251,7 +253,28 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     );
                 }
                 player = new MoviePlayer(selectedFile, surface, callback);
+                if (player.getExtractor()==null)
+                {
+                    Context context;
+                    context= getActivity().getApplicationContext();
+                    CharSequence text = "Error with playback!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                    mTextureView.dispatchFinishTemporaryDetach();
+                    surface.release();
+                    mPlayTask = null;
+                    player = null;
+
+                    pbt = null;
+                    inited = false;
+                    refreshAll();
+                    return;
+                }
+
             } catch (IOException ioe) {
+
                 surface.release();
                 return;
             }
@@ -271,6 +294,14 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             pbt.start();
             mPlayTask.execute();
         }
+    }
+
+    private void refreshAll() {
+        getFragmentManager()
+                .beginTransaction()
+                .detach(this)
+                .attach(this)
+                .commit();
     }
 
     public void fastForward() {
@@ -336,6 +367,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     pbt.requestStop();
                     surface.release();
                     inited = false;
+
                 } else {
                     mPlayTask.requestStop();
                     //a.requestStop();
@@ -347,16 +379,19 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     pbt = null;
                     inited = false;
 
+
                 }
             }
             stop_ff = false;
+
+
         }
 
     }
 
     @Override
     public void playbackStopped() {
-
+        refreshAll();
     }
 
     /**

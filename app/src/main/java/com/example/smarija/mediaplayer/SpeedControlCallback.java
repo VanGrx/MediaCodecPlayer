@@ -25,6 +25,7 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
     public void preRender(long presentationTimeUsec) {
 
 
+
         if (mPrevMonoUsec == 0) {
             mPrevMonoUsec = System.nanoTime() / 1000;
             mPrevPresentUsec = presentationTimeUsec;

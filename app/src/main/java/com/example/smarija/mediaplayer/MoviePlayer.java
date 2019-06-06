@@ -31,6 +31,7 @@ class MoviePlayer {
     private boolean mLoop;
     private int mVideoWidth;
     private int mVideoHeight;
+    int trackIndex;
 
     private long rewind_timeout = 20000;
     private boolean flag_stop = false;
@@ -42,6 +43,10 @@ class MoviePlayer {
     boolean paused = false;
     boolean fastForward = false;
     boolean rewind = false;
+
+    public MediaExtractor getExtractor() {
+        return extractor;
+    }
 
     public interface PlayerFeedback {
         void playbackStopped();
@@ -61,21 +66,19 @@ class MoviePlayer {
 
     MoviePlayer(File sourceFile, Surface outputSurface, FrameCallback frameCallback)
             throws IOException {
+
         mSourceFile = sourceFile;
         mOutputSurface = outputSurface;
         mFrameCallback = frameCallback;
-
         extractor = null;
 
 
-
-        try {
             extractor = new MediaExtractor();
             extractor.setDataSource(sourceFile.toString());
-            Log.e("IGOR",sourceFile.toString());
-            int trackIndex = selectTrack();
+            trackIndex = selectTrack();
             if (trackIndex < 0) {
-                throw new RuntimeException("No video track found in " + mSourceFile);
+               extractor=null;
+               return;
             }
             extractor.selectTrack(trackIndex);
 
@@ -83,15 +86,8 @@ class MoviePlayer {
             mVideoWidth = format.getInteger(MediaFormat.KEY_WIDTH);
             mVideoHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
             file_size = format.getLong(MediaFormat.KEY_DURATION);
-            Log.d(TAG,"DUZINA JE: "+file_size);
-            if (VERBOSE) {
-                Log.d(TAG, "Video size is " + mVideoWidth + "x" + mVideoHeight);
-            }
-        } finally {
-            if (extractor != null) {
-                extractor.release();
-            }
-        }
+
+
     }
 
     int getVideoWidth() {
@@ -113,7 +109,7 @@ class MoviePlayer {
 
     private void play() throws IOException {
         flag_play = true;
-        extractor = null;
+        //extractor = null;
         decoder = null;
 
         if (!mSourceFile.canRead()) {
@@ -121,13 +117,13 @@ class MoviePlayer {
         }
 
         try {
-            extractor = new MediaExtractor();
-            extractor.setDataSource(mSourceFile.toString());
-            int trackIndex = selectTrack();
-            if (trackIndex < 0) {
-                throw new RuntimeException("No video track found in " + mSourceFile);
-            }
-            extractor.selectTrack(trackIndex);
+//            extractor = new MediaExtractor();
+//            extractor.setDataSource(mSourceFile.toString());
+//            int trackIndex = selectTrack();
+//            if (trackIndex < 0) {
+//                throw new RuntimeException("No video track found in " + mSourceFile);
+//            }
+//            extractor.selectTrack(trackIndex);
 
             MediaFormat format = extractor.getTrackFormat(trackIndex);
 
