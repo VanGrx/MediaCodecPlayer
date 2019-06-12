@@ -3,7 +3,9 @@ package com.example.smarija.mediaplayer;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Matrix;
@@ -13,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +36,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 //        TextureView.SurfaceTextureListener, MoviePlayer.PlayerFeedback {
     private static final String TAG = "PLAYER";
    // TextView textView;
-    private TextureView mTextureView;
+    private SurfaceView mSurfaceView;
 
     private MoviePlayer.PlayTask mPlayTask;
     SpeedControlCallback callback;
@@ -65,8 +68,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                                 Bundle savedInstanceState) {
         final View view= inflater.inflate(R.layout.fragment_fragment2, container, false);
 
-        mTextureView = view.findViewById(R.id.movie_texture_view);
-        mTextureView.setSurfaceTextureListener(this);
+        mSurfaceView = view.findViewById(R.id.movie_surface_view);
+        //mSurfaceView.listener(this);
 
         pb = view.findViewById(R.id.progressBar);
         pb.setBackgroundColor(Color.WHITE);
@@ -235,8 +238,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             inited = true;
         {
             callback = new SpeedControlCallback();
-            SurfaceTexture st = mTextureView.getSurfaceTexture();
-            surface = new Surface(st);
+            surface = mSurfaceView.getHolder().getSurface();
+            //surface = new Surface(st);
             try {
 //                if(selectedFile == null)
 //                    selectedFile = new File("/sdcard/Movies/big_buck_bunny.mp4");
@@ -262,8 +265,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
-                    mTextureView.dispatchFinishTemporaryDetach();
-                    surface.release();
+                    mSurfaceView.dispatchFinishTemporaryDetach();
+                    //surface.release();
                     mPlayTask = null;
                     player = null;
 
@@ -275,7 +278,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 
             } catch (IOException ioe) {
 
-                surface.release();
+                //surface.release();
                 return;
             }
             adjustAspectRatio(player.getVideoWidth(), player.getVideoHeight());
@@ -297,11 +300,21 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     }
 
     private void refreshAll() {
-        getFragmentManager()
-                .beginTransaction()
-                .detach(this)
-                .attach(this)
-                .commit();
+
+
+
+    //    mSurfaceView.setVisibility(View.INVISIBLE);
+
+
+
+
+
+
+//        getFragmentManager()
+//                .beginTransaction()
+//                .detach(this)
+//                .attach(this)
+//                .commit();
     }
 
     public void fastForward() {
@@ -354,6 +367,9 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 
 
     public void stopPlayback() {
+        if (player!=null)
+            player.stopPlayback();
+
         if (stop_ff == true) {
         } else
         {
@@ -365,7 +381,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     mPlayTask.requestStop();
                     //a.requestStop();
                     pbt.requestStop();
-                    surface.release();
+                    //surface.release();
                     inited = false;
 
                 } else {
@@ -373,7 +389,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     //a.requestStop();
                     pbt.requestStop();
                     //a.exit();
-                    surface.release();
+                    //surface.release();
                     mPlayTask = null;
                     player = null;
                     pbt = null;
@@ -398,8 +414,8 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
      * Sets the TextureView transform to preserve the aspect ratio of the video.
      */
     private void adjustAspectRatio(int videoWidth, int videoHeight) {
-        int viewWidth = mTextureView.getWidth();
-        int viewHeight = mTextureView.getHeight();
+        int viewWidth = mSurfaceView.getWidth();
+        int viewHeight = mSurfaceView.getHeight();
         double aspectRatio = (double) videoHeight / videoWidth;
 
         int newWidth, newHeight;
@@ -420,10 +436,10 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                 " off=" + xoff + "," + yoff);
 
         Matrix txform = new Matrix();
-        mTextureView.getTransform(txform);
+       // mSurfaceView.getHolder().getTransform(txform);
         txform.setScale((float) newWidth / viewWidth, (float) newHeight / viewHeight);
         txform.postTranslate(xoff, yoff);
-        mTextureView.setTransform(txform);
+      //  mSurfaceView.setTransform(txform);
     }
 
 

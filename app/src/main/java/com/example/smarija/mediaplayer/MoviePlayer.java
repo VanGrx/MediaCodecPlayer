@@ -43,9 +43,21 @@ class MoviePlayer {
     boolean paused = false;
     boolean fastForward = false;
     boolean rewind = false;
+    boolean mStopped=false;
 
     public MediaExtractor getExtractor() {
         return extractor;
+    }
+
+    public void stopPlayback() {
+        requestStop();
+        while(!mStopped){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public interface PlayerFeedback {
@@ -88,6 +100,12 @@ class MoviePlayer {
             file_size = format.getLong(MediaFormat.KEY_DURATION);
 
 
+        String mime = format.getString(MediaFormat.KEY_MIME);
+        decoder = MediaCodec.createDecoderByType(mime);
+        decoder.configure(format, mOutputSurface, null, 0);
+
+
+
     }
 
     int getVideoWidth() {
@@ -110,7 +128,7 @@ class MoviePlayer {
     private void play() throws IOException {
         flag_play = true;
         //extractor = null;
-        decoder = null;
+        //decoder = null;
 
         if (!mSourceFile.canRead()) {
             throw new FileNotFoundException("Unable to read " + mSourceFile);
@@ -125,13 +143,13 @@ class MoviePlayer {
 //            }
 //            extractor.selectTrack(trackIndex);
 
-            MediaFormat format = extractor.getTrackFormat(trackIndex);
-
-            String mime = format.getString(MediaFormat.KEY_MIME);
-            decoder = MediaCodec.createDecoderByType(mime);
-            decoder.configure(format, mOutputSurface, null, 0);
+//            MediaFormat format = extractor.getTrackFormat(trackIndex);
+//
+//            String mime = format.getString(MediaFormat.KEY_MIME);
+//            decoder = MediaCodec.createDecoderByType(mime);
+//            decoder.configure(format, mOutputSurface, null, 0);
+//            decoder.start();
             decoder.start();
-
             doExtract(extractor, trackIndex, decoder, mFrameCallback);
         } finally {
             if (decoder != null) {
@@ -143,6 +161,11 @@ class MoviePlayer {
                 extractor.release();
                 extractor = null;
             }
+//            if( mOutputSurface!=null){
+//                mOutputSurface.release();
+//                mOutputSurface = null;
+//            }
+            mStopped=true;
         }
     }
 
@@ -180,6 +203,10 @@ class MoviePlayer {
             if (VERBOSE) Log.d(TAG, "loop");
             if(paused)
             {
+                if (mIsStopRequested) {
+                    Log.d(TAG, "Stop requested");
+                    return;
+                }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
