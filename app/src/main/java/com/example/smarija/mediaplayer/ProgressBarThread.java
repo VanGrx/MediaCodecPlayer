@@ -14,7 +14,7 @@ public class ProgressBarThread extends Thread {
     private ProgressBar pb_;
     private com.example.smarija.mediaplayer.MoviePlayer c_;
 
-    private boolean mIsStopRequested;
+    private boolean mIsStopRequested=false;
 
     ProgressBarThread(ProgressBar pb, com.example.smarija.mediaplayer.MoviePlayer c) {
         pb_=pb;
@@ -24,7 +24,7 @@ public class ProgressBarThread extends Thread {
 
     @Override
     public void run() {
-
+        mIsStopRequested = false;
         long duration = c_.file_size;
         pb_.setMax((int)duration);
         pb_.setProgress(0);
@@ -46,9 +46,13 @@ public class ProgressBarThread extends Thread {
             }
             pb_.setProgress((int)currentPosition);
         }
+        if(mIsStopRequested) {
+            pb_.setProgress(0);
+        }
     }
 
     void requestStop() {
         mIsStopRequested = true;
     }
+
 }

@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Matrix;
@@ -15,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
@@ -63,12 +66,14 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     private boolean show = false;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                 Bundle savedInstanceState) {
         final View view= inflater.inflate(R.layout.fragment_fragment2, container, false);
 
         mSurfaceView = view.findViewById(R.id.movie_surface_view);
+
         //mSurfaceView.listener(this);
 
         pb = view.findViewById(R.id.progressBar);
@@ -238,6 +243,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             inited = true;
         {
             callback = new SpeedControlCallback();
+            mSurfaceView.setVisibility(View.VISIBLE);
             surface = mSurfaceView.getHolder().getSurface();
             //surface = new Surface(st);
             try {
@@ -300,21 +306,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     }
 
     private void refreshAll() {
-
-
-
-    //    mSurfaceView.setVisibility(View.INVISIBLE);
-
-
-
-
-
-
-//        getFragmentManager()
-//                .beginTransaction()
-//                .detach(this)
-//                .attach(this)
-//                .commit();
+        mSurfaceView.setVisibility(View.INVISIBLE);
     }
 
     public void fastForward() {
@@ -322,23 +314,19 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         if (inited) {
             if(player.rewind==true){
                 player.rewind=false;
-                //a.rewind = false;
             }
             if (player.paused) {
                 player.paused = false;
-               // a.paused = false;
             }
 
             callback.setFixedPlaybackRate(120);
             player.fastForward = true;
-            //a.fastforward = true;
         } else {
         }
     }
 
     public void pause() {
         if (inited) {
-            //a.paused = true;
             player.paused = true;
             if (player.rewind) {
                 player.rewind = false;
@@ -353,15 +341,12 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         if (inited) {
             if(player.fastForward==true){
                 player.fastForward=false;
-                //a.fastforward = false;
             }
             if (player.paused) {
                 player.paused = false;
-                //a.paused = false;
             }
         callback.setFixedPlaybackRate(120);
         player.rewind=true;
-        //a.rewind = true;
         }
     }
 
@@ -369,6 +354,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     public void stopPlayback() {
         if (player!=null)
             player.stopPlayback();
+
 
         if (stop_ff == true) {
         } else
@@ -381,33 +367,27 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     mPlayTask.requestStop();
                     //a.requestStop();
                     pbt.requestStop();
-                    //surface.release();
+                    mSurfaceView.dispatchFinishTemporaryDetach();
                     inited = false;
 
                 } else {
                     mPlayTask.requestStop();
-                    //a.requestStop();
                     pbt.requestStop();
-                    //a.exit();
-                    //surface.release();
+                    mSurfaceView.dispatchFinishTemporaryDetach();
                     mPlayTask = null;
                     player = null;
-                    pbt = null;
+
+                   // pbt = null;
                     inited = false;
-
-
                 }
             }
             stop_ff = false;
-
-
         }
-
+        refreshAll();
     }
 
     @Override
     public void playbackStopped() {
-        refreshAll();
     }
 
     /**
