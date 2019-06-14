@@ -210,6 +210,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 //        one.setVisibility(View.INVISIBLE);
         show = true;
         if(inited) {
+
             if (player.paused) {
                 //a.paused = false;
                 player.paused = false;
@@ -245,7 +246,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
             callback = new SpeedControlCallback();
             mSurfaceView.setVisibility(View.VISIBLE);
             surface = mSurfaceView.getHolder().getSurface();
-            //surface = new Surface(st);
             try {
 //                if(selectedFile == null)
 //                    selectedFile = new File("/sdcard/Movies/big_buck_bunny.mp4");
@@ -275,7 +275,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                     //surface.release();
                     mPlayTask = null;
                     player = null;
-
                     pbt = null;
                     inited = false;
                     refreshAll();
@@ -283,22 +282,12 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                 }
 
             } catch (IOException ioe) {
-
                 //surface.release();
                 return;
             }
             adjustAspectRatio(player.getVideoWidth(), player.getVideoHeight());
             //play video and audio
             mPlayTask = new MoviePlayer.PlayTask(player, this);
-            //a = new Audio();
-            //a.useDescriptop = true;
-            //a.mfis=this.getResources().openRawResource(R.raw.test);
-            //a.msampleFD = getResources().openRawResourceFd(R.raw.big_buck_bunny);
-            //a.fis = selectedFile;
-            //a.sampleFD = selectedFile;
-            //a.start();
-
-            boolean mShowStopLabel = true;
             pbt= new ProgressBarThread(pb,player);
             pbt.start();
             mPlayTask.execute();
@@ -310,43 +299,23 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     }
 
     public void fastForward() {
-
         if (inited) {
-            if(player.rewind==true){
-                player.rewind=false;
-            }
-            if (player.paused) {
-                player.paused = false;
-            }
-
+            player.pressedFastForward();
             callback.setFixedPlaybackRate(120);
-            player.fastForward = true;
-        } else {
         }
     }
 
     public void pause() {
         if (inited) {
-            player.paused = true;
-            if (player.rewind) {
-                player.rewind = false;
+            if(player.pressedPause())
                 callback.setFixedPlaybackRate(0);
-                player.mFrameCallback.resetTime();
-                return;
-            }
         }
     }
 
     public void rewind() {
         if (inited) {
-            if(player.fastForward==true){
-                player.fastForward=false;
-            }
-            if (player.paused) {
-                player.paused = false;
-            }
-        callback.setFixedPlaybackRate(120);
-        player.rewind=true;
+           player.pressedRewind();
+           callback.setFixedPlaybackRate(120);
         }
     }
 
@@ -355,34 +324,17 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
         if (player!=null)
             player.stopPlayback();
 
-
-        if (stop_ff == true) {
-        } else
-        {
-            stop_ff = true;
             if (mPlayTask != null ) {
-                if (player.paused) {
-                    player.paused = false;
-                    //a.paused=false;
-                    mPlayTask.requestStop();
-                    //a.requestStop();
-                    pbt.requestStop();
-                    mSurfaceView.dispatchFinishTemporaryDetach();
-                    inited = false;
+                mPlayTask.requestStop();
+                pbt.requestStop();
+                mSurfaceView.dispatchFinishTemporaryDetach();
 
-                } else {
-                    mPlayTask.requestStop();
-                    pbt.requestStop();
-                    mSurfaceView.dispatchFinishTemporaryDetach();
+                if (player.pressedStop()) {
                     mPlayTask = null;
                     player = null;
-
-                   // pbt = null;
-                    inited = false;
                 }
+                inited = false;
             }
-            stop_ff = false;
-        }
         refreshAll();
     }
 

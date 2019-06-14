@@ -60,6 +60,51 @@ class MoviePlayer {
         }
     }
 
+    public boolean pressedPause() {
+        paused = true;
+        boolean x;
+        if (rewind) {
+            rewind = false;
+            //callback.setFixedPlaybackRate(0);
+            mFrameCallback.resetTime();
+            x=true;
+        }
+        else{
+            x=false;
+        }
+        return x;
+    }
+
+    public void pressedRewind() {
+        if(fastForward==true){
+            fastForward=false;
+        }
+        if (paused) {
+            paused = false;
+        }
+        rewind=true;
+    }
+
+    public void pressedFastForward() {
+        if(rewind==true){
+            rewind=false;
+        }
+        if (paused) {
+            paused = false;
+        }
+        fastForward = true;
+    }
+
+    public boolean pressedStop() {
+        boolean x=true;
+        if (paused) {
+            paused = false;
+            x=false;
+        } else {
+        }
+        return x;
+    }
+    
     public interface PlayerFeedback {
         void playbackStopped();
     }
