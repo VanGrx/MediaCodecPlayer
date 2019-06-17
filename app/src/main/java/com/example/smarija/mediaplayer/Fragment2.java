@@ -42,7 +42,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     private SurfaceView mSurfaceView;
 
     private MoviePlayer.PlayTask mPlayTask;
-    SpeedControlCallback callback;
 
     ProgressBar pb;
     ProgressBarThread pbt;
@@ -57,7 +56,6 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     Button buttonRewind;
 
     public boolean inited = false;
-    public boolean stop_ff = false;
 
 
     private TextView filePath;
@@ -210,46 +208,15 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
 //        one.setVisibility(View.INVISIBLE);
         show = true;
         if(inited) {
-
-            if (player.paused) {
-                //a.paused = false;
-                player.paused = false;
-                callback.setFixedPlaybackRate(0);
-                player.mFrameCallback.resetTime();
-                return;
-            } else if (player.fastForward) {
-                long temp = player.temp();
-                temp = (long) (temp + 500000);
-                //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-                player.fastForward = false;
-                //a.fastforward = false;
-                player.mFrameCallback.resetTime();
-                callback.setFixedPlaybackRate(0);
-                player.mFrameCallback.resetTime();
-                return;
-            }
-            else if (player.rewind) {
-                long temp = player.temp();
-                temp = (long) (temp + 500000);
-                //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-                player.rewind = false;
-                //a.rewind = false;
-                player.mFrameCallback.resetTime();
-                callback.setFixedPlaybackRate(0);
-                return;
-            } else
-                return;
+            player.pressedPlay();
+            return;
         }
 
             inited = true;
         {
-            callback = new SpeedControlCallback();
             mSurfaceView.setVisibility(View.VISIBLE);
             surface = mSurfaceView.getHolder().getSurface();
             try {
-//                if(selectedFile == null)
-//                    selectedFile = new File("/sdcard/Movies/big_buck_bunny.mp4");
-                // Check if we have write permission
                 Activity activity = getActivity();
                 int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -261,7 +228,7 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
                             REQUEST_EXTERNAL_STORAGE
                     );
                 }
-                player = new MoviePlayer(selectedFile, surface, callback);
+                player = new MoviePlayer(selectedFile, surface);
                 if (player.getExtractor()==null)
                 {
                     Context context;
@@ -301,21 +268,19 @@ public class Fragment2 extends Fragment implements TextureView.SurfaceTextureLis
     public void fastForward() {
         if (inited) {
             player.pressedFastForward();
-            callback.setFixedPlaybackRate(120);
+
         }
     }
 
     public void pause() {
         if (inited) {
-            if(player.pressedPause())
-                callback.setFixedPlaybackRate(0);
+            player.pressedPause();
         }
     }
 
     public void rewind() {
         if (inited) {
            player.pressedRewind();
-           callback.setFixedPlaybackRate(120);
         }
     }
 

@@ -27,7 +27,7 @@ class MoviePlayer {
 
     private File mSourceFile;
     private Surface mOutputSurface;
-    FrameCallback mFrameCallback;
+    SpeedControlCallback mFrameCallback;
     private boolean mLoop;
     private int mVideoWidth;
     private int mVideoHeight;
@@ -60,19 +60,13 @@ class MoviePlayer {
         }
     }
 
-    public boolean pressedPause() {
+    public void pressedPause() {
         paused = true;
-        boolean x;
         if (rewind) {
             rewind = false;
-            //callback.setFixedPlaybackRate(0);
+            mFrameCallback.setFixedPlaybackRate(0);
             mFrameCallback.resetTime();
-            x=true;
         }
-        else{
-            x=false;
-        }
-        return x;
     }
 
     public void pressedRewind() {
@@ -83,6 +77,7 @@ class MoviePlayer {
             paused = false;
         }
         rewind=true;
+        mFrameCallback.setFixedPlaybackRate(120);
     }
 
     public void pressedFastForward() {
@@ -92,7 +87,10 @@ class MoviePlayer {
         if (paused) {
             paused = false;
         }
+        mFrameCallback.setFixedPlaybackRate(120);
         fastForward = true;
+
+
     }
 
     public boolean pressedStop() {
@@ -104,7 +102,33 @@ class MoviePlayer {
         }
         return x;
     }
-    
+
+    public void pressedPlay() {
+        if (paused) {
+            paused = false;
+            mFrameCallback.setFixedPlaybackRate(0);
+            mFrameCallback.resetTime();
+        } else if (fastForward) {
+            long temp = temp();
+            temp = (long) (temp + 500000);
+            //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            fastForward = false;
+            //a.fastforward = false;
+            mFrameCallback.resetTime();
+            mFrameCallback.setFixedPlaybackRate(0);
+            mFrameCallback.resetTime();
+        }
+        else if (rewind) {
+            long temp = temp();
+            temp = (long) (temp + 500000);
+            //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            rewind = false;
+            //a.rewind = false;
+            mFrameCallback.resetTime();
+            mFrameCallback.setFixedPlaybackRate(0);
+        }
+    }
+
     public interface PlayerFeedback {
         void playbackStopped();
     }
@@ -119,9 +143,11 @@ class MoviePlayer {
 
         void resetTime();
     }
+    MoviePlayer(File sourceFile, Surface outputSurface) throws IOException {
+        this(sourceFile,outputSurface,new SpeedControlCallback());
+    }
 
-
-    MoviePlayer(File sourceFile, Surface outputSurface, FrameCallback frameCallback)
+    MoviePlayer(File sourceFile, Surface outputSurface, SpeedControlCallback frameCallback)
             throws IOException {
 
         mSourceFile = sourceFile;
