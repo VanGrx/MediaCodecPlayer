@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-public class BlankFragment extends Fragment {
+public class InfoFragment extends Fragment {
 
     TextView tv;
     String textView;

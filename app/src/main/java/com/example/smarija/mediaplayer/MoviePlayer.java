@@ -25,6 +25,7 @@ class MoviePlayer {
     private MediaExtractor extractor;
     private MediaCodec decoder;
 
+    private PlayTask mPlayTask;
     private File mSourceFile;
     private Surface mOutputSurface;
     SpeedControlCallback mFrameCallback;
@@ -100,6 +101,7 @@ class MoviePlayer {
             x=false;
         } else {
         }
+        mPlayTask=null;
         return x;
     }
 
@@ -129,6 +131,23 @@ class MoviePlayer {
         }
     }
 
+    public void start() {
+        mPlayTask.execute();
+    }
+
+    public boolean getmPlayTask() {
+        if(mPlayTask!=null){
+            mPlayTask.requestStop();
+            return true;
+        }
+        return false;
+    }
+
+    public void resetmPlayTask() {
+        mPlayTask=null;
+    }
+
+
     public interface PlayerFeedback {
         void playbackStopped();
     }
@@ -143,18 +162,23 @@ class MoviePlayer {
 
         void resetTime();
     }
-    MoviePlayer(File sourceFile, Surface outputSurface) throws IOException {
-        this(sourceFile,outputSurface,new SpeedControlCallback());
+    MoviePlayer(File sourceFile, Surface outputSurface, PlayerFeedback feedback) throws IOException {
+        this(sourceFile,outputSurface,new SpeedControlCallback(), feedback);
     }
 
-    MoviePlayer(File sourceFile, Surface outputSurface, SpeedControlCallback frameCallback)
+    MoviePlayer(File sourceFile, Surface outputSurface, SpeedControlCallback frameCallback, PlayerFeedback feedbackPlayTask)
             throws IOException {
+
+        if(sourceFile == null){
+            extractor=null;
+            return;
+        }
 
         mSourceFile = sourceFile;
         mOutputSurface = outputSurface;
         mFrameCallback = frameCallback;
         extractor = null;
-
+        mPlayTask = new PlayTask(this, feedbackPlayTask);
 
             extractor = new MediaExtractor();
             extractor.setDataSource(sourceFile.toString());
@@ -366,7 +390,7 @@ class MoviePlayer {
                 } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = decoder.getOutputFormat();
                     Log.e(TAG, "GRKI decoder output format changed: " + newFormat);
-                    //Fragment2.change(newFormat.getInteger(MediaFormat.));
+                    //MovieFragment.change(newFormat.getInteger(MediaFormat.));
                 } else if (decoderStatus < 0) {
                     throw new RuntimeException(
                             "unexpected result from decoder.dequeueOutputBuffer: " +

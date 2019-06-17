@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BlankFragment"
+    tools:context=".InfoFragment"
     android:id="@+id/fragment_container"
     android:orientation="vertical">
 
@@ -16,11 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Currently watching:"
+        android:text="@string/currently_watching"
         android:textColor="#99FCFCFC"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"/>
     <TextView
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         android:layout_weight="1"
         android:layout_margin="20dp"
         android:id="@+id/btn"
-        android:text="BACK"
+        android:text="@string/back"
         android:background="@drawable/button_background"
         android:layout_gravity="center_horizontal"/>
     <Space

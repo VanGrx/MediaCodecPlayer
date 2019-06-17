@@ -3,4 +3,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="currently_watching">Currently watching:</string>
+    <string name="back">BACK</string>
+    <string name="selected_file">Selected file</string>
+    <string name="no_file_selected">No file has been selected</string>
 </resources>

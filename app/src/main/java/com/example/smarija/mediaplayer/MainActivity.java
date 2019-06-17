@@ -8,14 +8,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
-public class MainActivity extends FragmentActivity implements FileFragment.OnListFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener {
+public class MainActivity extends FragmentActivity implements FileFragment.OnListFragmentInteractionListener, InfoFragment.OnFragmentInteractionListener {
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-Fragment2 fragment2;
+MovieFragment fragment2;
 FileFragment fragment1;
     @SuppressLint("ResourceType")
     @Override
@@ -33,7 +33,7 @@ FileFragment fragment1;
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-        fragment2=new Fragment2();
+        fragment2=new MovieFragment();
         fragment1=new FileFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragment2, fragment2, "someTag2");
@@ -46,7 +46,7 @@ FileFragment fragment1;
     @Override
     public void sendText(String s, String path) {
 
-       fragment2.updateText(s, path);
+       fragment2.updateSelectedFile(path);
         startTransaction(s);
 
     }
@@ -56,7 +56,7 @@ FileFragment fragment1;
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        BlankFragment fr=new BlankFragment();
+        InfoFragment fr=new InfoFragment();
         ft.replace(R.id.fragment1, fr, "detailFragment");
         fr.updateTextView(text);
         ft.commit();
