@@ -7,4 +7,8 @@
     <string name="back">BACK</string>
     <string name="selected_file">Selected file</string>
     <string name="no_file_selected">No file has been selected</string>
+    <string name="format">Format:</string>
+    <string name="duration">Duration:</string>
+    <string name="resolution">Resolution:</string>
+    <string name="title">Title:</string>
 </resources>

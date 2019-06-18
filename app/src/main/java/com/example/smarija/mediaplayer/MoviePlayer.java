@@ -33,6 +33,7 @@ class MoviePlayer {
     private int mVideoWidth;
     private int mVideoHeight;
     int trackIndex;
+    String mime;
 
     private long rewind_timeout = 20000;
     private boolean flag_stop = false;
@@ -71,7 +72,7 @@ class MoviePlayer {
     }
 
     public void pressedRewind() {
-        if(fastForward==true){
+        if(fastForward){
             fastForward=false;
         }
         if (paused) {
@@ -82,7 +83,7 @@ class MoviePlayer {
     }
 
     public void pressedFastForward() {
-        if(rewind==true){
+        if(rewind){
             rewind=false;
         }
         if (paused) {
@@ -99,7 +100,6 @@ class MoviePlayer {
         if (paused) {
             paused = false;
             x=false;
-        } else {
         }
         mPlayTask=null;
         return x;
@@ -145,6 +145,14 @@ class MoviePlayer {
 
     public void resetmPlayTask() {
         mPlayTask=null;
+    }
+
+    long getVideoDuration() {
+        return file_size;
+    }
+
+    public String getVideoFormat() {
+        return mime;
     }
 
 
@@ -195,7 +203,8 @@ class MoviePlayer {
             file_size = format.getLong(MediaFormat.KEY_DURATION);
 
 
-        String mime = format.getString(MediaFormat.KEY_MIME);
+
+        mime = format.getString(MediaFormat.KEY_MIME);
         decoder = MediaCodec.createDecoderByType(mime);
         decoder.configure(format, mOutputSurface, null, 0);
 

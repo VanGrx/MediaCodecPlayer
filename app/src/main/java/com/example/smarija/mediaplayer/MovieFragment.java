@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -124,6 +123,11 @@ public class MovieFragment extends Fragment implements MoviePlayer.PlayerFeedbac
         clickPlay();
     }
 
+    public interface OnFragmentInteractionListener {
+
+        void sendVideoInfo(int videoWidth, int videoHeight, long videoDuration, String videoFormat);
+    }
+
     @Override
     public void onResume() {
         Log.d(TAG, "PlayMovieActivity onResume");
@@ -185,6 +189,11 @@ public class MovieFragment extends Fragment implements MoviePlayer.PlayerFeedbac
         pbt= new ProgressBarThread(pb,player);
         pbt.start();
         player.start();
+        OnFragmentInteractionListener c = (OnFragmentInteractionListener) getActivity();
+        assert c != null;
+        c.sendVideoInfo(player.getVideoWidth(), player.getVideoHeight(), player.getVideoDuration(), player.getVideoFormat());
+
+
     }
 
     private void setVideoVisibility(boolean status) {

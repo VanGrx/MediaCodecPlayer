@@ -7,7 +7,7 @@
     android:id="@+id/fragment_container"
     android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,22 +22,108 @@
         android:gravity="center_horizontal"
         android:textSize="20sp"
         android:textStyle="bold"/>
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/textViewForVideo"
-        android:textColor="#99FCFCFC"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"/>
+        android:layout_weight="8"
+        android:orientation="horizontal"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="20dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:ignore="NestedWeights">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textForVideo"
+                android:text="@string/title"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="left"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textForVideoResolution"
+                android:text="@string/resolution"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="left" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textForVideoDuration"
+                android:text="@string/duration"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="left" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textForVideoFormat"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="left"
+                android:text="@string/format"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textViewForVideo"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textViewForVideoResolution"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textViewForVideoDuration"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/textViewForVideoFormat"
+                android:textColor="#99FCFCFC"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"/>
+        android:layout_weight="3"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:layout_margin="20dp"
         android:id="@+id/btn"
         android:text="@string/back"
@@ -46,7 +132,7 @@
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="3"/>
 
 
 </LinearLayout>

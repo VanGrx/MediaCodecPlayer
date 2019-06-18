@@ -8,7 +8,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
-public class MainActivity extends FragmentActivity implements FileFragment.OnListFragmentInteractionListener, InfoFragment.OnFragmentInteractionListener {
+public class MainActivity extends FragmentActivity implements FileFragment.OnListFragmentInteractionListener, InfoFragment.OnFragmentInteractionListener,
+MovieFragment.OnFragmentInteractionListener{
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -17,6 +18,7 @@ public class MainActivity extends FragmentActivity implements FileFragment.OnLis
     };
 MovieFragment fragment2;
 FileFragment fragment1;
+String title;
     @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +46,21 @@ FileFragment fragment1;
 
 
     @Override
-    public void sendText(String s, String path) {
-
+    public void sendText(String titleVideo, String path) {
+    title=titleVideo;
        fragment2.updateSelectedFile(path);
-        startTransaction(s);
+
 
     }
 
     @SuppressLint("ResourceType")
-    private void startTransaction(String text) {
+    private void startTransaction(String title, int videoWidth, int videoHeight, long videoDuration, String videoFormat) {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         InfoFragment fr=new InfoFragment();
         ft.replace(R.id.fragment1, fr, "detailFragment");
-        fr.updateTextView(text);
+        fr.updateTextView(title, videoWidth, videoHeight, videoDuration, videoFormat);
         ft.commit();
 
     }
@@ -72,5 +74,10 @@ FileFragment fragment1;
         ft.replace(R.id.fragment1, fr, "fileFragment");
         ft.commit();
 
+    }
+
+    @Override
+    public void sendVideoInfo(int videoWidth, int videoHeight,  long videoDuration, String videoFormat) {
+        startTransaction(title, videoWidth, videoHeight, videoDuration, videoFormat);
     }
 }
