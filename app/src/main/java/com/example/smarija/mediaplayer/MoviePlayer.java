@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.Surface;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,123 +26,71 @@ class MoviePlayer {
 
     private PlayTask mPlayTask;
     private File mSourceFile;
-    private Surface mOutputSurface;
-    SpeedControlCallback mFrameCallback;
+    private SpeedControlCallback mFrameCallback;
     private boolean mLoop;
     private int mVideoWidth;
     private int mVideoHeight;
-    int trackIndex;
-    String mime;
-
-    private long rewind_timeout = 20000;
-    private boolean flag_stop = false;
+    private int trackIndex;
+    private String mime;
 
     long file_size = 0;
     long current_size = 0;
 
-    private boolean flag_play = false;
-    boolean paused = false;
-    boolean fastForward = false;
-    boolean rewind = false;
-    boolean mStopped=false;
+    enum States{PLAY,PAUSE,FAST_FORWARD,REWIND,STOP};
 
-    public MediaExtractor getExtractor() {
+    private States currentState = States.STOP;
+
+    MediaExtractor getExtractor() {
         return extractor;
     }
 
-    public void stopPlayback() {
+    void stopPlayback() {
         requestStop();
-        while(!mStopped){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        mPlayTask.waitForStop();
     }
 
-    public void pressedPause() {
-        paused = true;
-        if (rewind) {
-            rewind = false;
-            mFrameCallback.setFixedPlaybackRate(0);
-            mFrameCallback.resetTime();
-        }
+    void pressedPause() {
+        currentState = States.PAUSE;
+        mFrameCallback.setFixedPlaybackRate(0);
+        mFrameCallback.resetTime();
     }
 
-    public void pressedRewind() {
-        if(fastForward){
-            fastForward=false;
-        }
-        if (paused) {
-            paused = false;
-        }
-        rewind=true;
+    void pressedRewind() {
+        currentState = States.REWIND;
         mFrameCallback.setFixedPlaybackRate(120);
     }
 
-    public void pressedFastForward() {
-        if(rewind){
-            rewind=false;
-        }
-        if (paused) {
-            paused = false;
-        }
+    void pressedFastForward() {
+        currentState = States.FAST_FORWARD;
         mFrameCallback.setFixedPlaybackRate(120);
-        fastForward = true;
-
-
     }
 
-    public boolean pressedStop() {
-        boolean x=true;
-        if (paused) {
-            paused = false;
-            x=false;
-        }
+    void pressedStop() {
+        currentState = States.STOP;
         mPlayTask=null;
-        return x;
     }
 
-    public void pressedPlay() {
-        if (paused) {
-            paused = false;
-            mFrameCallback.setFixedPlaybackRate(0);
-            mFrameCallback.resetTime();
-        } else if (fastForward) {
-            long temp = temp();
-            temp = (long) (temp + 500000);
-            //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-            fastForward = false;
-            //a.fastforward = false;
-            mFrameCallback.resetTime();
-            mFrameCallback.setFixedPlaybackRate(0);
-            mFrameCallback.resetTime();
-        }
-        else if (rewind) {
-            long temp = temp();
-            temp = (long) (temp + 500000);
-            //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-            rewind = false;
-            //a.rewind = false;
-            mFrameCallback.resetTime();
-            mFrameCallback.setFixedPlaybackRate(0);
-        }
+    void pressedPlay() {
+        currentState = States.PLAY;
+
+        long temp = temp();
+        temp = (long) (temp + 500000);
+        //a.extractor.seekTo(temp, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+        //a.fastforward = false;
+        mFrameCallback.resetTime();
+        mFrameCallback.setFixedPlaybackRate(0);
+        mFrameCallback.resetTime();
     }
 
-    public void start() {
+    void start() {
         mPlayTask.execute();
     }
 
-    public boolean getmPlayTask() {
-        if(mPlayTask!=null){
-            mPlayTask.requestStop();
-            return true;
-        }
-        return false;
+    boolean isPlayTaskCreated() {
+        return mPlayTask != null;
     }
 
-    public void resetmPlayTask() {
+    void resetmPlayTask() {
         mPlayTask=null;
     }
 
@@ -151,10 +98,9 @@ class MoviePlayer {
         return file_size;
     }
 
-    public String getVideoFormat() {
+    String getVideoFormat() {
         return mime;
     }
-
 
     public interface PlayerFeedback {
         void playbackStopped();
@@ -168,13 +114,12 @@ class MoviePlayer {
 
         void loopReset();
 
-        void resetTime();
     }
     MoviePlayer(File sourceFile, Surface outputSurface, PlayerFeedback feedback) throws IOException {
         this(sourceFile,outputSurface,new SpeedControlCallback(), feedback);
     }
 
-    MoviePlayer(File sourceFile, Surface outputSurface, SpeedControlCallback frameCallback, PlayerFeedback feedbackPlayTask)
+    private MoviePlayer(File sourceFile, Surface outputSurface, SpeedControlCallback frameCallback, PlayerFeedback feedbackPlayTask)
             throws IOException {
 
         if(sourceFile == null){
@@ -183,7 +128,6 @@ class MoviePlayer {
         }
 
         mSourceFile = sourceFile;
-        mOutputSurface = outputSurface;
         mFrameCallback = frameCallback;
         extractor = null;
         mPlayTask = new PlayTask(this, feedbackPlayTask);
@@ -202,14 +146,9 @@ class MoviePlayer {
             mVideoHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
             file_size = format.getLong(MediaFormat.KEY_DURATION);
 
-
-
-        mime = format.getString(MediaFormat.KEY_MIME);
-        decoder = MediaCodec.createDecoderByType(mime);
-        decoder.configure(format, mOutputSurface, null, 0);
-
-
-
+            mime = format.getString(MediaFormat.KEY_MIME);
+            decoder = MediaCodec.createDecoderByType(mime);
+            decoder.configure(format, outputSurface, null, 0);
     }
 
     int getVideoWidth() {
@@ -230,29 +169,11 @@ class MoviePlayer {
     }
 
     private void play() throws IOException {
-        flag_play = true;
-        //extractor = null;
-        //decoder = null;
-
         if (!mSourceFile.canRead()) {
             throw new FileNotFoundException("Unable to read " + mSourceFile);
         }
 
         try {
-//            extractor = new MediaExtractor();
-//            extractor.setDataSource(mSourceFile.toString());
-//            int trackIndex = selectTrack();
-//            if (trackIndex < 0) {
-//                throw new RuntimeException("No video track found in " + mSourceFile);
-//            }
-//            extractor.selectTrack(trackIndex);
-
-//            MediaFormat format = extractor.getTrackFormat(trackIndex);
-//
-//            String mime = format.getString(MediaFormat.KEY_MIME);
-//            decoder = MediaCodec.createDecoderByType(mime);
-//            decoder.configure(format, mOutputSurface, null, 0);
-//            decoder.start();
             decoder.start();
             doExtract(extractor, trackIndex, decoder, mFrameCallback);
         } finally {
@@ -265,11 +186,7 @@ class MoviePlayer {
                 extractor.release();
                 extractor = null;
             }
-//            if( mOutputSurface!=null){
-//                mOutputSurface.release();
-//                mOutputSurface = null;
-//            }
-            mStopped=true;
+            currentState = States.STOP;
         }
     }
 
@@ -297,7 +214,7 @@ class MoviePlayer {
                            FrameCallback frameCallback) {
 
         final int TIMEOUT_USEC = 10000;
-        ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
+        //ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
         int inputChunk = 0;
         long firstInputTimeNsec = -1;
         long rewind_timer = -1;
@@ -305,7 +222,7 @@ class MoviePlayer {
         boolean inputDone = false;
         while (!outputDone) {
             if (VERBOSE) Log.d(TAG, "loop");
-            if(paused)
+            if(currentState == States.PAUSE)
             {
                 if (mIsStopRequested) {
                     Log.d(TAG, "Stop requested");
@@ -318,21 +235,18 @@ class MoviePlayer {
                 }
                 continue;
             }
-            if(rewind) {
-                if (!flag_stop) {
-                    if (rewind_timer == -1) {
-                        rewind_timer = current_size;
-                    }
-                    extractor.seekTo(rewind_timer - rewind_timeout, MediaExtractor.SEEK_TO_NEXT_SYNC);
-                    rewind_timer = rewind_timer - rewind_timeout;
-                    mFrameCallback.resetTime();
-                    mFrameCallback.resetTime();
+            if(currentState == States.REWIND) {
+                long rewind_timeout = 20000;
+                if (rewind_timer == -1) {
+                    rewind_timer = current_size;
                 }
-                    if ((rewind_timer - rewind_timeout) < 0) {
+                extractor.seekTo(rewind_timer - rewind_timeout, MediaExtractor.SEEK_TO_NEXT_SYNC);
+                rewind_timer = rewind_timer - rewind_timeout;
+                mFrameCallback.resetTime();
+                mFrameCallback.resetTime();
+                if ((rewind_timer - rewind_timeout) < 0) {
                         extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-                    }
-
-
+                }
             }
             else
                 rewind_timer=-1;
@@ -349,9 +263,10 @@ class MoviePlayer {
                     if (firstInputTimeNsec == -1) {
                         firstInputTimeNsec = System.nanoTime();
                     }
-                    ByteBuffer inputBuf = decoderInputBuffers[inputBufIndex];
+                    ByteBuffer inputBuf = decoder.getInputBuffer(inputBufIndex);
                     // Read the sample data into the ByteBuffer.  This neither respects nor
                     // updates inputBuf's position, limit, etc.
+                    assert inputBuf != null;
                     int chunkSize = extractor.readSampleData(inputBuf, 0);
                     if (chunkSize < 0) {
                         // End of stream -- send empty frame with EOS flag set.
@@ -387,8 +302,6 @@ class MoviePlayer {
                 }
             }
 
-
-            if (!outputDone) {
                 int decoderStatus = decoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
                 if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                     // no output available yet
@@ -430,7 +343,7 @@ class MoviePlayer {
                     // to SurfaceTexture to convert to a texture.  We can't control when it
                     // appears on-screen, but we can manage the pace at which we release
                     // the buffers.
-                    if (doRender && frameCallback != null && !rewind) {
+                    if (doRender && frameCallback != null && currentState != States.REWIND) {
                         frameCallback.preRender(mBufferInfo.presentationTimeUs);
                     }
                     decoder.releaseOutputBuffer(decoderStatus, doRender);
@@ -443,14 +356,16 @@ class MoviePlayer {
                         extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
                         inputDone = false;
                         decoder.flush();    // reset decoder state
-                        frameCallback.loopReset();
+                        if (frameCallback != null) {
+                            frameCallback.loopReset();
+                        }
                     }
                 }
-            }
+
         }
     }
 
-    long temp(){
+    private long temp(){
         return mBufferInfo.presentationTimeUs;
     }
 
@@ -459,7 +374,7 @@ class MoviePlayer {
 
         private MoviePlayer mPlayer;
         private PlayerFeedback mFeedback;
-        private boolean mDoLoop;
+        private boolean mDoLoop=false;
         private Thread mThread;
         private LocalHandler mLocalHandler;
 
@@ -519,13 +434,11 @@ class MoviePlayer {
             public void handleMessage(Message msg) {
                 int what = msg.what;
 
-                switch (what) {
-                    case MSG_PLAY_STOPPED:
-                        PlayerFeedback fb = (PlayerFeedback) msg.obj;
-                        fb.playbackStopped();
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown msg " + what);
+                if (what == MSG_PLAY_STOPPED) {
+                    PlayerFeedback fb = (PlayerFeedback) msg.obj;
+                    fb.playbackStopped();
+                } else {
+                    throw new RuntimeException("Unknown msg " + what);
                 }
             }
         }

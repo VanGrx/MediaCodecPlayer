@@ -88,8 +88,7 @@ public class SpeedControlCallback implements com.example.smarija.mediaplayer.Mov
         mLoopReset = true;
     }
 
-    @Override
-    public void resetTime() {
+    void resetTime() {
         mPrevMonoUsec = 0;
     }
 }

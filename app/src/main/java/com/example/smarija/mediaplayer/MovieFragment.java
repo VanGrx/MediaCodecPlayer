@@ -223,13 +223,13 @@ public class MovieFragment extends Fragment implements MoviePlayer.PlayerFeedbac
         if (player!=null) {
             player.stopPlayback();
 
-            if (player.getmPlayTask()) {
+            if (player.isPlayTaskCreated()) {
                 pbt.requestStop();
                 mSurfaceView.dispatchFinishTemporaryDetach();
 
-                if (player.pressedStop()) {
-                    player = null;
-                }
+                player.pressedStop();
+                player = null;
+
                 inited = false;
             }
             setVideoVisibility(false);

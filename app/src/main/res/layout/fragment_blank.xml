@@ -29,7 +29,8 @@
         android:orientation="horizontal"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:baselineAligned="false">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="4"
@@ -42,35 +43,39 @@
                 android:layout_weight="1"
                 android:id="@+id/textForVideo"
                 android:text="@string/title"
+                android:textStyle="bold"
                 android:textColor="#99FCFCFC"
                 android:layout_gravity="center"
-                android:gravity="left"/>
+                android:gravity="start"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:id="@+id/textForVideoResolution"
                 android:text="@string/resolution"
+                android:textStyle="bold"
                 android:textColor="#99FCFCFC"
                 android:layout_gravity="center"
-                android:gravity="left" />
+                android:gravity="start" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:id="@+id/textForVideoDuration"
                 android:text="@string/duration"
+                android:textStyle="bold"
                 android:textColor="#99FCFCFC"
                 android:layout_gravity="center"
-                android:gravity="left" />
+                android:gravity="start" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:id="@+id/textForVideoFormat"
+                android:textStyle="bold"
                 android:textColor="#99FCFCFC"
                 android:layout_gravity="center"
-                android:gravity="left"
+                android:gravity="start"
                 android:text="@string/format"/>
 
         </LinearLayout>
