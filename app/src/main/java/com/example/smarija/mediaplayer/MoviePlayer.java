@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 
 class MoviePlayer {
     private static final String TAG = "PLAYER";
-    private static final boolean VERBOSE = false;
 
     private MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
 
@@ -45,6 +44,7 @@ class MoviePlayer {
     }
 
     void stopPlayback() {
+        currentState = States.STOP;
         requestStop();
         mPlayTask.waitForStop();
     }
@@ -132,23 +132,23 @@ class MoviePlayer {
         extractor = null;
         mPlayTask = new PlayTask(this, feedbackPlayTask);
 
-            extractor = new MediaExtractor();
-            extractor.setDataSource(sourceFile.toString());
-            trackIndex = selectTrack();
-            if (trackIndex < 0) {
-               extractor=null;
-               return;
-            }
-            extractor.selectTrack(trackIndex);
+        extractor = new MediaExtractor();
+        extractor.setDataSource(sourceFile.toString());
+        trackIndex = selectTrack();
+        if (trackIndex < 0) {
+           extractor=null;
+           return;
+        }
+        extractor.selectTrack(trackIndex);
 
-            MediaFormat format = extractor.getTrackFormat(trackIndex);
-            mVideoWidth = format.getInteger(MediaFormat.KEY_WIDTH);
-            mVideoHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
-            file_size = format.getLong(MediaFormat.KEY_DURATION);
+        MediaFormat format = extractor.getTrackFormat(trackIndex);
+        mVideoWidth = format.getInteger(MediaFormat.KEY_WIDTH);
+        mVideoHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
+        file_size = format.getLong(MediaFormat.KEY_DURATION);
 
-            mime = format.getString(MediaFormat.KEY_MIME);
-            decoder = MediaCodec.createDecoderByType(mime);
-            decoder.configure(format, outputSurface, null, 0);
+        mime = format.getString(MediaFormat.KEY_MIME);
+        decoder = MediaCodec.createDecoderByType(mime);
+        decoder.configure(format, outputSurface, null, 0);
     }
 
     int getVideoWidth() {
@@ -162,7 +162,6 @@ class MoviePlayer {
     private void setLoopMode(boolean loopMode) {
         mLoop = loopMode;
     }
-
 
     private void requestStop() {
         mIsStopRequested = true;
@@ -199,9 +198,6 @@ class MoviePlayer {
             String mime = format.getString(MediaFormat.KEY_MIME);
             Log.e("IGOR",mime);
             if (mime.startsWith("video/")) {
-                if (VERBOSE) {
-                    Log.e("IGOR", "Extractor selected track " + i + " (" + mime + "): " + format);
-                }
                 return i;
             }
         }
@@ -214,14 +210,11 @@ class MoviePlayer {
                            FrameCallback frameCallback) {
 
         final int TIMEOUT_USEC = 10000;
-        //ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
-        int inputChunk = 0;
         long firstInputTimeNsec = -1;
         long rewind_timer = -1;
         boolean outputDone = false;
         boolean inputDone = false;
         while (!outputDone) {
-            if (VERBOSE) Log.d(TAG, "loop");
             if(currentState == States.PAUSE)
             {
                 if (mIsStopRequested) {
@@ -274,7 +267,6 @@ class MoviePlayer {
                                 MediaCodec.BUFFER_FLAG_END_OF_STREAM);
 
                         inputDone = true;
-                        if (VERBOSE) Log.d(TAG, "sent input EOS");
                     } else {
                         if (extractor.getSampleTrackIndex() != trackIndex) {
                             Log.w(TAG, "WEIRD: got sample from track " +
@@ -284,31 +276,15 @@ class MoviePlayer {
                         long presentationTimeUs = extractor.getSampleTime();
                         decoder.queueInputBuffer(inputBufIndex, 0, chunkSize,
                                 presentationTimeUs, 0 /*flags*/);
-                        if (VERBOSE) {
-                            Log.d(TAG, "submitted frame " + inputChunk + " to dec, size=" +
-                                    chunkSize);
-                        }
-                        inputChunk++;
                         extractor.advance();
-                        int wigor = decoder.getOutputFormat().getInteger(MediaFormat.KEY_WIDTH);
-                        int wigo2r = decoder.getInputFormat().getInteger(MediaFormat.KEY_WIDTH);
-                        int higor = decoder.getOutputFormat().getInteger(MediaFormat.KEY_HEIGHT);
-                        int higo2r = decoder.getInputFormat().getInteger(MediaFormat.KEY_HEIGHT);
-                        Log.e("IGOR","Width is: "+wigor+" a drugi je "+wigo2r+"| Height is"+higor+" a drugi je" +higo2r);
                         current_size = extractor.getSampleTime();
                     }
-                } else {
-                    if (VERBOSE) Log.d(TAG, "input buffer not available");
                 }
             }
 
                 int decoderStatus = decoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
-                if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                    // no output available yet
-                    if (VERBOSE) Log.d(TAG, "no output from decoder available");
-                } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                    // not important for us, since we're using Surface
-                    if (VERBOSE) Log.d(TAG, "decoder output buffers changed");
+                if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER || decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    Log.v(TAG,"Nothing to do...skipping");
                 } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = decoder.getOutputFormat();
                     Log.e(TAG, "GRKI decoder output format changed: " + newFormat);
@@ -326,10 +302,8 @@ class MoviePlayer {
                         firstInputTimeNsec = 0;
                     }
                     boolean doLoop = false;
-                    if (VERBOSE) Log.d(TAG, "surface decoder given buffer " + decoderStatus +
-                            " (size=" + mBufferInfo.size + ")");
+
                     if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                        if (VERBOSE) Log.d(TAG, "output EOS");
                         if (mLoop) {
                             doLoop = true;
                         } else {
@@ -392,10 +366,6 @@ class MoviePlayer {
             mPlayer.setLoopMode(mDoLoop);
             mThread = new Thread(this, "Movie Player");
             mThread.start();
-        }
-
-        void requestStop() {
-            mPlayer.requestStop();
         }
 
         void waitForStop() {
