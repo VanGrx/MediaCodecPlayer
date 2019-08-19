@@ -1,4 +1,4 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 
 import android.graphics.Color;
@@ -6,17 +6,17 @@ import android.widget.ProgressBar;
 
 
 /**
- * Created by smarija on 26.4.2017.
+ * Created by mediacodec on 26.4.2017.
  */
 
 public class ProgressBarThread extends Thread {
 
     private ProgressBar pb_;
-    private com.example.smarija.mediaplayer.MoviePlayer c_;
+    private com.example.mediacodec.mediaplayer.MoviePlayer c_;
 
     private boolean mIsStopRequested=false;
 
-    ProgressBarThread(ProgressBar pb, com.example.smarija.mediaplayer.MoviePlayer c) {
+    ProgressBarThread(ProgressBar pb, com.example.mediacodec.mediaplayer.MoviePlayer c) {
         pb_=pb;
         c_=c;
 

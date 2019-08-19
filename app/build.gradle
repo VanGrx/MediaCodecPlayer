@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.example.smarija.mediaplayer"
+        applicationId "com.example.mediacodec.mediaplayer"
         minSdkVersion 26
         targetSdkVersion 26
         versionCode 1

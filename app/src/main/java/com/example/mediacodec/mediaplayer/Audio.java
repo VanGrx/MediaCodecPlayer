@@ -1,4 +1,4 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioFormat;

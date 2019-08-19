@@ -1,4 +1,4 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

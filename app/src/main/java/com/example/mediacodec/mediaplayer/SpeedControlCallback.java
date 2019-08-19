@@ -1,8 +1,8 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 import android.util.Log;
 
-public class SpeedControlCallback implements com.example.smarija.mediaplayer.MoviePlayer.FrameCallback {
+public class SpeedControlCallback implements com.example.mediacodec.mediaplayer.MoviePlayer.FrameCallback {
     private static final String TAG = "CAO";
     private static final boolean CHECK_SLEEP_TIME = false;
 

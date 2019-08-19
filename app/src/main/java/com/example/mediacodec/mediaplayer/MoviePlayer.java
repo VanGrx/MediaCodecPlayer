@@ -1,4 +1,4 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;

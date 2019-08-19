@@ -1,4 +1,4 @@
-package com.example.smarija.mediaplayer;
+package com.example.mediacodec.mediaplayer;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.smarija.mediaplayer.R.*;
+import static com.example.mediacodec.mediaplayer.R.*;
 
 
 /**
